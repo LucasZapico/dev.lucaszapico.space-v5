@@ -1,0 +1,92 @@
+---
+title: "Fly Fishing Guide Booking Platform"
+slug: "fly-fishing-guide"
+category: "Booking Platform"
+tags: ["React Router 7", "NestJS", "Directus", "Stripe", "Jotai", "React Email", "Docker"]
+featured: false
+date: "2024"
+thumbnail: "/images/cases/fly-fishing-guide.jpg"
+status: "Completed"
+---
+
+## Overview
+
+A booking platform for a Northern California fly fishing guide service — handling trip selection, seasonal availability, deposit-based payments, and automated notifications. The guide had been managing bookings over text messages and losing track of schedules. He needed something that worked with the messy reality of seasonal fishing — species availability changes monthly, water conditions shift weekly, and trip types depend on both.
+
+## Architecture
+
+**Monorepo with four workspaces** (pnpm):
+
+- **Site** — React Router 7 with SSR, Tailwind v4, shadcn/ui, Jotai for atomic state management, Stripe Elements for payment, React Email for transactional templates, and Plausible Analytics.
+- **API** — NestJS 11 BFF proxying Directus, Medusa, Twenty CRM, and Stripe. Modules for content, classes, commerce, CRM sync, and webhook handling.
+- **Ecom** — Medusa v2 headless commerce engine for gear shop (rods, flies, accessories).
+- **CMS** — Directus 11 managing trip types, scheduled instances, guides, pages, and a block-based page builder.
+
+Docker Compose orchestrates PostgreSQL 16, Redis 7, Directus, and Twenty CRM locally.
+
+## The Booking Problem
+
+Fly fishing trips aren't like restaurant reservations. Availability depends on:
+- **Season** — rainbow trout peaks March-May and October-November; steelhead runs December-February
+- **Water body** — some rivers are wade-only, others support drift boats; access varies by month
+- **Trip type** — wade vs. float fishing, half-day vs. full-day
+- **Party size** — 1-2 adults, 0-1 kids (under 16 at 50% discount)
+
+A standard calendar picker doesn't work. I built a preference-based booking wizard that cross-filters options in real time.
+
+## Booking Wizard
+
+Eight-step flow built with Jotai atomic state:
+
+1. **Month/date selection** — calendar with availability indicators
+2. **Party composition** — adults (1-2) and kids (0-1)
+3. **Trip type** — wade or float (filters water bodies that support each)
+4. **Duration** — half-day or full-day (different pricing tiers)
+5. **Fish selection** — multi-select, grayed out if unavailable that month. "Guide's Pick" option breaks the filter chain.
+6. **Water selection** — multi-select, filtered by trip type and fish availability. "Guide's Pick" option available.
+7. **Trip results** — matching experiences with price breakdown
+8. **Checkout** — Stripe Elements payment form for deposit
+
+**Cross-filtering logic:** Selecting a month filters to fish available that month. Selecting a fish filters to waters where it's found. Selecting wade/float filters to compatible waters. Each selection narrows subsequent options. "Guide's Pick" on either fish or water bypasses the filter — the guide picks based on real-time conditions.
+
+All state lives in Jotai atoms with a computed `filtersAtom` that derives available options reactively. No persistence — fresh booking experience on each visit.
+
+## Payment Model
+
+**Flat-rate pricing** (not per-person):
+- Wade half-day: $275 / Full-day: $450
+- Float half-day: $350 / Full-day: $550
+
+**20% deposit at booking**, remainder due day-of-trip. This is encoded as a constant (`DEPOSIT_PERCENTAGE = 0.2`), not a Stripe configuration.
+
+**Server-side price calculation.** The frontend displays prices but never sends them to the server. The `create-payment-intent` route independently calculates the price from trip type and duration, then creates the Stripe PaymentIntent for the deposit amount only. This prevents any client-side price manipulation.
+
+```
+Rate limiting: 10 payment intents per minute per IP
+CSRF: Origin validation
+Webhook: Stripe signature verification
+```
+
+## Email Notifications
+
+React Email templates rendered to HTML via Resend:
+
+- **Booking confirmation** (customer) — trip details, deposit paid, remaining balance, what-to-expect guide, gear checklist
+- **Guide notification** (internal) — customer contact info, preferences, payment status
+
+Both sent automatically on successful payment via webhook.
+
+## CMS & Content
+
+Directus 11 with a block-based page builder lets the guide manage:
+- Trip descriptions and seasonal content
+- Photo galleries
+- Blog posts about local fishing conditions
+- Guide profiles
+- Homepage sections (hero, classes, events, testimonials, stats, FAQs)
+
+The section registry pattern maps Directus block types to React components — 16 block types supported.
+
+## What This Demonstrates
+
+Building domain-specific software that respects the complexity of the business. The booking wizard's cross-filtering logic is the interesting engineering problem — it's not a generic date picker, it's a preference engine that narrows options across four interdependent dimensions (season, species, water, trip type). Server-side price validation, deposit-based payment splitting, and a BFF architecture that keeps six services behind a single API surface.

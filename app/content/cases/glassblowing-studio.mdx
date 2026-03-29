@@ -1,0 +1,58 @@
+---
+title: "Glassblowing Studio Digital Platform"
+slug: "glassblowing-studio"
+category: "Commerce & Operations"
+tags: ["React Router 7", "NestJS", "Medusa v2", "Directus", "Stripe", "PostgreSQL", "Docker"]
+featured: true
+date: "2024"
+thumbnail: "/images/cases/glassblowing-studio.jpg"
+status: "Completed"
+---
+
+## Overview
+
+A full-stack platform for a Detroit-based glassblowing studio — unifying class enrollment, e-commerce, event management, CRM, and a student portal into a single self-hosted system. The studio had been running on a patchwork of SaaS tools (Squarespace, Calendly, Square, spreadsheets) that couldn't talk to each other. I replaced all of it with one coherent platform.
+
+## Architecture
+
+**Monorepo with four workspaces** (pnpm workspaces):
+
+- **Site** — React Router 7 with SSR, Tailwind v4, Radix UI. 13 routes including a student portal with magic-link authentication.
+- **API** — NestJS 11 BFF (Backend for Frontend) that proxies all external services. 7 modules: classes, portal, content, CRM, mail, commerce, webhooks.
+- **Ecom** — Medusa v2 headless commerce engine for the shop and gallery sales.
+- **CMS** — Directus 11 managing classes, events, gallery, pages, and a block-based page builder.
+
+All services backed by PostgreSQL 16 and Redis 7, orchestrated with Docker Compose locally and deployed via Coolify (self-hosted PaaS).
+
+## Key Technical Decisions
+
+**BFF pattern over direct CMS/commerce calls.** The frontend never talks to Directus, Medusa, Stripe, or the CRM directly. Every request goes through NestJS, which handles auth, validation, error normalization, and cross-cutting concerns. This keeps credentials server-side, simplifies CORS, and gives me a single place to enforce business logic.
+
+**Magic-link authentication for the student portal.** No passwords. HMAC-SHA256 signed tokens with single-use nonces, 15-minute expiry, and timing-safe comparison to prevent replay and timing attacks. Rate-limited to 3 requests per email per 15 minutes. Session tokens last 24 hours.
+
+**Two-phase Stripe checkout with business-rule refunds.** Enrollment creates a Stripe checkout session with 30-minute expiry. On confirmation, the system syncs to the CRM, generates a 6-character check-in code (avoiding ambiguous characters like 0/O, 1/I/L), and sends a confirmation email. Cancellation calculates refunds based on time-to-class: full refund at 48+ hours, 50% at 24+ hours, nothing under 24 hours. All of this is server-side business logic, not Stripe configuration.
+
+**CRM integration with Twenty** (open-source CRM). Every enrollment automatically creates or updates a contact, logs the enrollment with payment status, and tracks subscription channels (classes, gallery, shop, events, newsletter). Check-in codes are generated and stored in the CRM for in-studio use.
+
+**Section registry pattern** on the frontend. Directus pages use a block-based content model — the frontend maps block types to React components via a registry, letting the studio owner compose pages without touching code.
+
+## Technical Challenges
+
+**Spot management with optimistic decrement.** When a student starts enrollment, I immediately decrement `spots_available` to prevent overselling, then restore the spot if the Stripe session expires or the student cancels. This required careful handling of the checkout lifecycle — webhook confirmation plus server-side polling as a fallback.
+
+**Waitlist promotion.** When a spot opens (cancellation), the system automatically notifies the next person on the waitlist with an enrollment link. This is event-driven — the cancellation handler triggers the promotion, sends the email, and logs the activity in the CRM.
+
+**Email system with React Email + Resend.** Seven email types (enrollment confirmation, cancellation with refund details, magic links, waitlist notifications, admin alerts, contact inquiries, channel digests), all built as JSX templates for type-safe, programmatic rendering.
+
+## Infrastructure
+
+- PostgreSQL 16 (single instance, three databases: Directus, Medusa, Twenty CRM)
+- Redis 7 for CMS caching
+- Structured JSON logging (Pino) with Sentry/GlitchTip error tracking
+- Swagger auto-generated API docs
+- Coolify deployment with staged environment configs
+- Plausible Analytics (self-hosted, privacy-first)
+
+## What This Demonstrates
+
+End-to-end system design and implementation — from database schema to deployment pipeline. I chose the architecture, integrated five external services behind a clean API surface, implemented real payment flows with business-rule refunds, and built a custom auth system. The codebase is ~30,000 lines across four workspaces, documented, and deployed to production infrastructure I manage.

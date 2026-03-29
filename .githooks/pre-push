@@ -1,0 +1,25 @@
+#!/bin/sh
+# Block commits containing non-webp images (PNG, JPG, JPEG)
+# All images should be converted to webp before committing.
+
+BLOCKED_EXTENSIONS="png|jpg|jpeg"
+BLOCKED_FILES=$(git diff --cached --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -iE "\.($BLOCKED_EXTENSIONS)$" || true)
+
+if [ -z "$BLOCKED_FILES" ]; then
+  # Also check staged but not yet in HEAD
+  BLOCKED_FILES=$(git diff --name-only HEAD @{push} 2>/dev/null | grep -iE "\.($BLOCKED_EXTENSIONS)$" || true)
+fi
+
+if [ -n "$BLOCKED_FILES" ]; then
+  echo ""
+  echo "ERROR: Non-webp images found in commits being pushed:"
+  echo ""
+  echo "$BLOCKED_FILES" | sed 's/^/  /'
+  echo ""
+  echo "Convert to webp first:"
+  echo "  cwebp -q 85 input.png -o output.webp"
+  echo ""
+  exit 1
+fi
+
+exit 0

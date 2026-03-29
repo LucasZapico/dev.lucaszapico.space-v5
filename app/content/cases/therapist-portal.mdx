@@ -1,0 +1,83 @@
+---
+title: "Therapist Website & Client Portal"
+slug: "therapist-portal"
+category: "Healthcare"
+tags: ["React Router 7", "NestJS", "PostgreSQL", "TypeORM", "Stripe", "Google Calendar", "Docker"]
+featured: true
+date: "2024"
+thumbnail: "/images/cases/therapist-portal.jpg"
+status: "Completed"
+---
+
+## Overview
+
+A dual-interface platform for a hypnotherapy practice — combining a public-facing website with a secure client portal for booking, messaging, and personalized wellness content. The therapist needed to manage her entire practice from one system: scheduling, payments, client communication, and content delivery. Standard tools like Calendly + Mailchimp + Google Docs couldn't provide the continuity her practice required.
+
+## Architecture
+
+**Three-layer stack:**
+
+- **Frontend** — React Router 7 (Remix) with SSR, Tailwind v4, Framer Motion animations, Plausible Analytics, and Sentry error tracking. ~210 components, 31K lines of TypeScript.
+- **Backend** — NestJS 10 with TypeORM, PostgreSQL 15, Passport.js + JWT authentication, Stripe for payments, Resend + Nodemailer (with SMTP fallback) for email, and Google Calendar OAuth 2.0 integration. 14 modules, 40+ API endpoints.
+- **CMS** — Directus for editorial content (articles, podcasts, media) and Twenty CRM for contact management.
+
+Deployed via Docker Compose on Coolify with Traefik reverse proxy and Let's Encrypt SSL.
+
+## Database Design
+
+PostgreSQL 15 with TypeORM migrations. Key entities:
+
+- **Users** with role enum (CLIENT, THERAPIST), account lockout (5 failed attempts → 24-hour lock), and a `discoveryCompletedAt` timestamp that gates access to messaging — clients must complete a discovery call before they can message the therapist.
+- **Bookings** with support for both authenticated and guest users (`user_id` nullable). Status machine: PENDING → PENDING_PAYMENT → CONFIRMED → COMPLETED/CANCELLED/NO_SHOW. Unique constraint on (date, startTime) prevents double-booking at the database level, with an exception for cancelled slots.
+- **Session types** with configurable duration, pricing (nullable for free sessions), and visibility controls for new vs. returning clients.
+- **Availability** — weekly recurring schedule + blocked dates for vacations.
+- **Message threads** — threaded conversations between client and therapist, with unread counts, last-message previews, and archive support.
+- **Feed items** — personalized wellness content (audio recordings, guided meditations, affirmations, PDFs, links, videos) that the therapist assigns per client, optionally tied to specific sessions. View tracking for engagement analytics.
+
+## Key Technical Decisions
+
+**Guest booking flow.** New clients can book a discovery call without creating an account first. The `user_id` on bookings is nullable — the system captures guest name, email, and phone, then prompts account creation after the first session. This reduces friction in the acquisition funnel.
+
+**Discovery call gating.** The `discoveryCompletedAt` field on users acts as a feature gate — clients can't access messaging, the content feed, or the full portal until after their first session. This isn't a technical limitation; it's a therapeutic boundary encoded in the system.
+
+**Google Calendar bidirectional sync.** Bookings create Google Calendar events via OAuth 2.0. The `googleEventId` stored on each booking enables updates and cancellations to propagate. The OAuth flow is proxied through the Remix frontend for security (client secrets never exposed).
+
+**Tiered rate limiting.** Three levels: short (3 req/sec), medium (20 req/10s), long (100 req/60s). Applied per-route based on sensitivity — payment endpoints get short limits, search gets long.
+
+**Feature flags via decorator.** `@FeatureFlag('BOOKINGS')` guard on routes allows toggling features without deployment. Clean decorator pattern using NestJS guards.
+
+## Multi-Step Booking Flow
+
+Four-step funnel:
+1. **Select session type** — filtered by new vs. returning client eligibility
+2. **Choose date and time** — computed from weekly availability minus blocked dates and existing bookings, respecting session duration
+3. **Enter details** — name, email, phone, session notes
+4. **Confirmation** — Stripe checkout for paid sessions, instant confirmation for free sessions
+
+The availability algorithm is timezone-aware (Intl.DateTimeFormat, zero dependencies) and excludes past times, booked slots, and blocked dates in a single pass.
+
+## Client Portal Features
+
+- **Dashboard** — upcoming and past sessions, booking management
+- **Messaging** — threaded conversations with email delivery (Resend primary, SMTP fallback). Unread indicators and archive.
+- **Wellness feed** — therapist-curated content per client. Seven content types: audio, images, text, links, video, PDF, affirmations. View tracking for engagement analytics.
+- **Session management** — reschedule, cancel, view history
+- **Notification preferences** — granular opt-out by notification type
+
+## Security
+
+- JWT with 15-minute access tokens, 7-day refresh tokens (bcrypt-hashed storage)
+- Account lockout after 5 failed login attempts (24-hour cooldown)
+- Helmet.js security headers (CSP, HSTS)
+- CORS whitelisting
+- Stripe webhook signature verification (raw body processing)
+- API key validation for internal service-to-service calls
+- Environment-aware robots.txt (staging blocked from indexing)
+
+## Testing
+
+225 test files across the project — Vitest + React Testing Library for the frontend, Jest for the backend. Service unit tests, integration tests for the booking flow, and dashboard UI tests.
+
+## What This Demonstrates
+
+Building a privacy-sensitive, multi-interface platform where the business logic is the hard part — not the UI. Guest-to-authenticated user flows, therapeutic boundary enforcement via feature gating, bidirectional calendar sync, and a tiered security model. The 225-test suite shows I care about the code working correctly, not just looking correct.

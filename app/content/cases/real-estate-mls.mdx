@@ -1,0 +1,71 @@
+---
+title: "Internal Pseudo-MLS for a Real Estate Brokerage"
+slug: "real-estate-mls"
+category: "Internal Tools"
+tags: ["Go", "PostgreSQL", "PostGIS", "React 19", "JWT", "OAuth 2.0", "Docker"]
+featured: true
+date: "2024"
+thumbnail: "/images/cases/real-estate-mls.jpg"
+status: "Completed"
+---
+
+## Overview
+
+A custom internal listing intelligence platform for a real estate brokerage — designed to give brokers early visibility into upcoming and off-market listings before they hit the public MLS. The brokerage's competitive advantage was information timing, and their existing workflow (group texts, spreadsheets, verbal handoffs) was losing deals.
+
+## Architecture
+
+**Go backend with clean architecture**, strict layering, and dependency injection:
+
+- **HTTP layer** — Chi v5 router with middleware for JWT auth, structured logging, CORS, rate limiting, and 60-second request timeouts.
+- **Usecase layer** — Business logic for auth, listings, search, IDX sync, notifications, and reporting. Decoupled from HTTP handlers.
+- **Domain layer** — Entity definitions and repository interfaces for users, listings, properties, agents, brokers, offices, and media.
+- **Adapter layer** — PostgreSQL repositories (pgx v5 with connection pooling), Redis cache, OAuth providers (Google, Facebook), and file storage.
+
+**React 19 frontend** with Vite, TypeScript, Zustand for auth state, TanStack React Query for server state, React Hook Form + Zod for validation, and Tailwind v4.
+
+## Database Design
+
+PostgreSQL 16 with PostGIS for geospatial queries. 618-line initial migration covering 20+ tables:
+
+- **Listings** with a state machine for status transitions: `coming_soon → active → pending → sold/withdrawn/expired`. Each transition is validated in the service layer and logged to `listing_status_history` for audit compliance.
+- **Properties** with PostGIS geometry columns — automatic `ST_Point` calculation via database triggers. Full-text search vectors (tsvector) with weighted fields for street address, subdivision, and county.
+- **Price history** tracking with delta calculations for market analysis.
+- **Audit logs** capturing every significant action (user, entity, old/new values, IP, user agent) for compliance reporting.
+- **IDX feed integration** tables for syncing with external MLS sources (RETS/RESO APIs) on 15-minute intervals, with detailed sync logs tracking records created, updated, deleted, and errored.
+
+All tables use UUID primary keys, JSONB for flexible schema where needed, and cascading deletes for referential integrity.
+
+## Key Technical Decisions
+
+**Go over Node.js.** The brokerage needed a fast, reliable system with minimal runtime overhead. Go's type safety, compiled binary deployment (~20MB Alpine container), and native concurrency made it the right choice for a system handling real-time listing data and geospatial queries.
+
+**PostGIS for search.** Radius-based search (miles), bounding-box queries (map viewport), and exact location lookups — all powered by GIST indexes on geometry columns. Database triggers automatically compute geometry from lat/lng on insert/update, keeping the application layer clean.
+
+**Four-role RBAC.** Admin, broker, agent, and consumer — each with different visibility into listings, search results, and analytics. JWT claims carry role, agent ID, broker ID, and office ID so every downstream service can enforce permissions without additional lookups.
+
+**Refresh token security.** Tokens stored as bcrypt hashes (not plaintext), invalidated after use (rotation pattern), and cleaned up on password change. 15-minute access tokens, 7-day refresh tokens.
+
+**Combined repository pattern.** Instead of injecting separate listing and property repositories into the service, I composed them into a `CombinedListingRepository` that satisfies multiple domain interfaces. Clean dependency injection without DI framework overhead.
+
+## Search Capabilities
+
+- Full-text search on address, city, subdivision, county (PostgreSQL tsvector with English stemming)
+- Geospatial queries: radius, bounding box, exact coordinates (PostGIS GIST indexes)
+- Faceted filtering: price range, bedrooms, bathrooms, square footage, year built, features (pool, waterfront, garage)
+- Saved searches with notification settings
+- Listing view analytics (anonymized IP, referrer, session tracking)
+- Auto-generated MLS numbers: `BHRECO-YYYYMMDD-XXXXX`
+
+## Infrastructure
+
+- Multi-stage Docker build (Go 1.23 Alpine → ~20MB production binary)
+- PostgreSQL 16 with PostGIS 3.4
+- Redis 7 for caching
+- Structured logging (Zerolog → JSON)
+- 47 configurable environment variables (12-factor app via Viper)
+- Health check endpoints for container orchestration
+
+## What This Demonstrates
+
+Backend architecture in a statically-typed language with real domain complexity — geospatial queries, state machines, RBAC, audit compliance, and external data pipeline integration. This isn't a CRUD app; it's an internal tool designed to create competitive advantage through information timing and controlled visibility.

@@ -1,0 +1,88 @@
+---
+title: "Memory Care & Assisted Living Search Platform"
+slug: "memory-care-platform"
+category: "Marketplace"
+tags: ["React Router 7", "Express", "MongoDB", "Redis", "Zod", "Docker", "Data Pipeline"]
+featured: true
+date: "2024"
+thumbnail: "/images/cases/memory-care-platform.jpg"
+status: "Completed"
+---
+
+## Overview
+
+A Zillow-style discovery platform for memory care, assisted living, and adult family homes across the Pacific Northwest. Families searching for care face fragmented, outdated, and often misleading information scattered across state registries, Google listings, and facility marketing sites. I built a platform that aggregates data from six state registries, enriches it with web scraping and LLM-powered extraction, and serves it through a search interface with 79 filterable dimensions.
+
+## Architecture
+
+**Monorepo with two workspaces** (pnpm + Turbo):
+
+- **Backend** — Express 5 with Zod-validated routes, MongoDB (Mongoose), Redis + Bull job queues, S3 storage, and Socket.io for real-time admin features. 24 database models, 25 route handlers.
+- **Frontend** — React Router 7 with SSR, Tailwind v4, shadcn/ui, Jotai for state, TanStack React Query, Google Maps integration, TipTap rich text editor, and Recharts for analytics dashboards.
+
+Deployed via Docker on Coolify with Cloudflare Tunnel for secure ingress and Traefik reverse proxy.
+
+## Data Pipeline
+
+The platform's core differentiator is the data. I built a multi-source ingestion pipeline:
+
+**State registry adapters** for WA (DSHS), OR (DHS), CA (CDSS), NV (DPBH), MT (DPHHS), ID (IDHW), and CMS (federal nursing home data). Each state publishes facility data in a different format — CSV, HTML tables, PDFs, APIs — so each adapter handles parsing, normalization, and deduplication independently.
+
+**Enrichment workers** (Bull job queues) fill in gaps the registries don't provide:
+- Web scraping (Cheerio) for facility websites — extracting amenities, photos, descriptions
+- Google Places API for coordinates, ratings, and photos
+- LLM-powered field extraction for unstructured text (mapping free-form descriptions to structured facility attributes)
+- Three caching layers (scrape cache, Google cache, LLM cache) to minimize API costs and respect rate limits
+
+**Deduplication service** handles overlapping data across sources — the same facility might appear in a state registry, CMS federal data, and a Google Places result. The system reconciles these into a single canonical listing with source tracking.
+
+## Search & Filtering
+
+79 filterable dimensions across 10 categories:
+
+- **Care type** — memory care, assisted living, adult family home, nursing home, independent living, continuing care, respite
+- **Medical capabilities** — wheelchair, bariatric, dialysis, ventilator, insulin, wound care, controlled meds
+- **Security** — door alarms, wander guards, perimeter security, locked facility
+- **Staffing** — minimum staff ratios, staff types, therapy services, 24-hour nursing
+- **Room preferences** — private bathroom, furnished, square footage, kitchenette
+- **End-of-life** — hospice allowed, palliative care, can remain through end of life
+- **Location** — state, city, county, zip, radius search, map viewport (bounding box)
+- **Price** — min/max range with currency
+- **Availability** — currently accepting residents
+- **Lifestyle** — pet-friendly, transportation, activity programs, dietary accommodations
+
+Geospatial queries use MongoDB's GeoJSON indexing for radius and bounding-box search. Full-text search covers facility names, descriptions, and addresses.
+
+## Key Technical Decisions
+
+**MongoDB over PostgreSQL.** Facility data is deeply nested and varies wildly by source — rooms have features, staff have specializations, medical capabilities are arrays of enums. The document model maps naturally to this shape. Geospatial indexing on coordinates handles location queries without PostGIS.
+
+**Zod for runtime validation + OpenAPI generation.** Every route validates input with Zod schemas, and the same schemas generate OpenAPI documentation automatically via zod-to-openapi. Frontend and backend share type definitions.
+
+**Bull job queues for enrichment.** Enrichment is slow (web scraping, API calls, LLM inference) and failure-prone. Bull + Redis gives me retry logic, rate limiting, progress tracking, and the ability to pause/resume enrichment runs without losing state.
+
+**Multi-role architecture.** Four user types — admin, provider (facility operators), advertiser, and seeker (families). Providers can claim facilities, update listings, and manage their presence. Advertisers can run auction-based ad campaigns with budget management and impression/click tracking.
+
+## Platform Features Beyond Search
+
+- **Facility comparison tool** — side-by-side comparison of up to 4 facilities
+- **Loved one profiles** — care recipients with mobility and cognitive assessments, used to filter results
+- **Inquiry tracking** — contact requests with preference capture
+- **Advertising platform** — auction-based bidding system for featured placement
+- **Analytics dashboards** — Recharts-powered views for facility operators (views, inquiries, search impressions)
+- **Support ticket system** — threaded help desk with real-time Socket.io notifications
+- **Email campaigns** — milestone-based notifications (first inquiry, tour reminders, follow-ups)
+
+## Infrastructure
+
+- MongoDB with geospatial and compound indexes
+- Redis for caching + Bull job queue orchestration
+- Docker multi-stage builds (node:20-alpine)
+- Coolify + Cloudflare Tunnel + Traefik
+- Plausible Analytics (privacy-first)
+- Playwright E2E test suite
+- Environment-aware robots.txt (blocks indexing on staging)
+
+## What This Demonstrates
+
+Full-stack product engineering at scale — not just building a search UI, but designing the data pipeline, enrichment strategy, and platform architecture that makes the search possible. This project involved web scraping, LLM integration, geospatial queries, multi-role access control, a real-time ad auction system, and deployment infrastructure. It's the most complex system I've built.

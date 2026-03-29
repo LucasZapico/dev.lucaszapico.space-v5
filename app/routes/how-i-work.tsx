@@ -1,0 +1,145 @@
+import { Link } from "react-router";
+import { generateMeta } from "~/lib/meta";
+import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
+
+export function meta() {
+  return generateMeta({
+    title: "Approach — Lucas Zapico",
+    description:
+      "How I think about building software — architecture-first, honest trade-offs, and systems built to last.",
+    path: "/how-i-work",
+  });
+}
+
+const principles = [
+  {
+    step: "01",
+    title: "Understand the problem before writing code",
+    description:
+      "I start with constraints, not solutions. What does the system actually need to do? What are the failure modes? What decisions need to happen at the architecture level before anyone opens an editor?",
+  },
+  {
+    step: "02",
+    title: "Architecture before interface",
+    description:
+      "Data models, API boundaries, auth patterns, deployment strategy — I think about these first. A well-architected system makes everything downstream easier: features ship faster, bugs are shallower, onboarding is smoother.",
+  },
+  {
+    step: "03",
+    title: "Ship in working increments",
+    description:
+      "I build in vertical slices — real, working software at every step, not wireframes followed by months of silence. This keeps the feedback loop tight and surfaces problems early.",
+  },
+  {
+    step: "04",
+    title: "Leave the codebase better than I found it",
+    description:
+      "Clean code, clear naming, meaningful tests, documentation where it matters. The goal is a system the next engineer can understand and extend without a guided tour.",
+  },
+];
+
+const tooling = [
+  {
+    title: "Current stack",
+    description:
+      "React / React Router, NestJS, PostgreSQL, MongoDB, Directus CMS, Medusa (headless commerce), Stripe, Docker, Tailwind CSS, TypeScript across the board. Python, FastAPI, and PyTorch on the side.",
+  },
+  {
+    title: "On AI-assisted development",
+    description:
+      "I use AI tools throughout my workflow — research, code generation, testing, documentation. It's a multiplier, not a replacement. The architecture, system design, and engineering judgment are mine. The tools I use to execute are whatever gets the best result.",
+  },
+  {
+    title: "What this means for a team",
+    description:
+      "Higher throughput without sacrificing quality. I move fast because I've invested in tooling and patterns that let me — not because I cut corners.",
+  },
+];
+
+const thrive = [
+  "Small teams where engineers own features end-to-end",
+  "Codebases that value clarity over cleverness",
+  "Product-minded engineering — understanding why, not just what",
+  "Environments where shipping matters more than process theater",
+];
+
+export default function ApproachPage() {
+  return (
+    <main className="mx-auto max-w-4xl px-4 py-16">
+      <section className="mb-16">
+        <H1>Approach</H1>
+        <Lead className="mt-4 max-w-2xl">
+          How I think about building software — and what it's like to work
+          with me on a team.
+        </Lead>
+      </section>
+
+      {/* Principles */}
+      <section className="mb-24">
+        <SectionLabel>
+          Engineering Principles
+        </SectionLabel>
+        <div className="mt-8 space-y-12">
+          {principles.map((item) => (
+            <div key={item.step} className="grid gap-4 md:grid-cols-[80px_1fr]">
+              <span className="text-3xl font-bold text-muted-foreground/30">
+                {item.step}
+              </span>
+              <div>
+                <H3>{item.title}</H3>
+                <Body className="mt-2">
+                  {item.description}
+                </Body>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Tools & Approach */}
+      <section className="mb-24 border-t pt-16">
+        <SectionLabel>
+          Tools & Workflow
+        </SectionLabel>
+        <div className="mt-8 space-y-8">
+          {tooling.map((item) => (
+            <div key={item.title}>
+              <H3>{item.title}</H3>
+              <Body className="mt-2">{item.description}</Body>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Where I Thrive */}
+      <section className="mb-24 border-t pt-16">
+        <SectionLabel>
+          Where I Thrive
+        </SectionLabel>
+        <ul className="mt-8 space-y-4">
+          {thrive.map((item) => (
+            <li
+              key={item}
+              className="border-l-2 border-muted-foreground/20 pl-4 text-muted-foreground"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="rounded-lg bg-secondary p-8 text-center">
+        <H2>Sound like a fit?</H2>
+        <Body className="mt-2">
+          I'm looking for my next role. Let's talk.
+        </Body>
+        <Link
+          to="/contact"
+          className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Get in touch
+        </Link>
+      </section>
+    </main>
+  );
+}
