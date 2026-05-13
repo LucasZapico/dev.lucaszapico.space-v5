@@ -11,6 +11,8 @@ export default [
   layout("routes/layout.tsx", [
     route("work", "routes/work.tsx"),
     route("work/:slug", "routes/work.$slug.tsx"),
+    route("lab", "routes/lab.tsx"),
+    route("lab/:slug", "routes/lab.$slug.tsx"),
     route("how-i-work", "routes/how-i-work.tsx"),
     route("articles", "routes/articles.tsx"),
     route("about", "routes/about.tsx"),
