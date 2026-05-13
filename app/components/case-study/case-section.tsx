@@ -1,5 +1,6 @@
 import type { CaseSection, ContentBlock } from "~/lib/case-studies";
 import { H2, H3 } from "~/components/common/typography";
+import { FadeIn } from "~/components/common/animate";
 
 function BlockRenderer({ block }: { block: ContentBlock }) {
   if (block.type === "text") {
@@ -150,18 +151,18 @@ let sideBySideCount = 0;
 export function CaseSectionRenderer({ section, index }: { section: CaseSection; index: number }) {
   const variant = section.variant || "prose";
 
+  let content: React.ReactNode;
+
   if (variant === "side-by-side" && section.image) {
     sideBySideCount++;
-    return <SideBySideSection section={section} flip={sideBySideCount % 2 === 0} />;
+    content = <SideBySideSection section={section} flip={sideBySideCount % 2 === 0} />;
+  } else if (variant === "cards") {
+    content = <CardsSection section={section} />;
+  } else if (variant === "callout") {
+    content = <CalloutSection section={section} />;
+  } else {
+    content = <ProseSections section={section} />;
   }
 
-  if (variant === "cards") {
-    return <CardsSection section={section} />;
-  }
-
-  if (variant === "callout") {
-    return <CalloutSection section={section} />;
-  }
-
-  return <ProseSections section={section} />;
+  return <FadeIn delay={index === 0 ? 0 : 0.1}>{content}</FadeIn>;
 }

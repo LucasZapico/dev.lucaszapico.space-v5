@@ -1,11 +1,14 @@
+import { useRef } from "react";
 import { Link } from "react-router";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Button } from "~/components/ui/button";
 import { SiteHeader } from "~/components/layout/site-header";
 import { SiteFooter } from "~/components/layout/site-footer";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body, Small } from "~/components/common/typography";
-import { Stagger, StaggerItem, FadeIn } from "~/components/common/animate";
+import { CountUp, WordStagger, FadeIn } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
+import { SiteEffects } from "~/components/common/site-effects";
 
 export function meta() {
   return generateMeta({
@@ -95,10 +98,30 @@ const strengths = [
   },
 ];
 
+// Same pattern as the footer — ref on outer static div, motion.div inside gets the y transform
+function CaseCard({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 0.75", "start 0.1"],
+  });
+  const opacity = useTransform(scrollYProgress, [delay, Math.min(delay + 0.5, 1)], [0, 1]);
+  const y = useTransform(scrollYProgress, [delay, 1], [30, 0]);
+
+  return (
+    <div ref={ref} className={className}>
+      <motion.div style={{ opacity, y }}>
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
+      <SiteEffects />
 
       {/* Hero with animated mesh gradient */}
       <section className="relative min-h-[80vh] overflow-hidden">
@@ -111,13 +134,12 @@ export default function Home() {
           }}
         />
         <div className="relative z-10 flex h-full min-h-[80vh] w-full flex-col justify-between pt-24 pb-8 px-8 md:pt-28 md:pb-12 md:px-12">
-          {/* Top row */}
           <div className="flex items-start justify-between">
             <H1 className="text-white">
-              Full-stack engineer
+              <WordStagger>Full-stack engineer</WordStagger>
               <br />
               <span className="text-white/70">
-                who ships real systems
+                <WordStagger delay={0.35}>who ships real systems</WordStagger>
               </span>
             </H1>
             <div className="hidden flex-col items-end gap-4 md:flex">
@@ -125,17 +147,13 @@ export default function Home() {
                 <Link to="/work">See my work</Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link
-                  to="/contact"
-                  className="border-white/30 text-white hover:bg-white/10"
-                >
+                <Link to="/contact" className="border-white/30 text-white hover:bg-white/10">
                   Let's connect
                 </Link>
               </Button>
             </div>
           </div>
 
-          {/* Bottom row */}
           <div className="flex items-end justify-between">
             <Small className="font-label text-white/60">
               8+ years full-stack
@@ -151,16 +169,12 @@ export default function Home() {
             </Lead>
           </div>
 
-          {/* Mobile CTAs */}
           <div className="mt-8 flex gap-4 md:hidden">
             <Button asChild>
               <Link to="/work">See my work</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link
-                to="/contact"
-                className="border-white/30 text-white hover:bg-white/10"
-              >
+              <Link to="/contact" className="border-white/30 text-white hover:bg-white/10">
                 Let's connect
               </Link>
             </Button>
@@ -171,9 +185,9 @@ export default function Home() {
       <main className="mx-auto max-w-6xl px-4">
         {/* Credibility bar */}
         <section className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-t py-8 font-label text-sm text-muted-foreground">
-          <span>8+ years full-stack</span>
+          <span><CountUp to={8} suffix="+" /> years full-stack</span>
           <span className="hidden text-border sm:inline">|</span>
-          <span>5 industries</span>
+          <span><CountUp to={5} /> industries</span>
           <span className="hidden text-border sm:inline">|</span>
           <span>TypeScript, Go, Python</span>
         </section>
@@ -181,48 +195,41 @@ export default function Home() {
         {/* Selected Work */}
         <section className="border-t py-24">
           <SectionLabel>Selected Work</SectionLabel>
-          <Stagger className="mt-8 grid gap-10 md:grid-cols-2" stagger={0.15}>
+          <div className="mt-8 grid gap-10 md:grid-cols-2">
             {featuredWork.map((project, i) => (
-              <div
+              <CaseCard
                 key={project.slug}
+                delay={i % 2 === 1 ? 0.15 : 0}
                 className={i % 2 === 1 ? "md:mt-24" : ""}
               >
-                <Link
-                  to={`/work/${project.slug}`}
-                  className="group block"
-                >
-                  <StaggerItem>
-                    <ProjectSlideshow
-                      images={project.images}
-                      alt={project.title}
-                      gradient={project.gradient}
-                      category={project.category}
-                    />
-                  </StaggerItem>
-                  <StaggerItem>
-                    <div className="mt-6 flex flex-col gap-4 md:flex-row md:gap-8">
-                      <div className="md:w-1/2">
-                        <H3 className="group-hover:text-foreground/80 transition-colors">
-                          {project.title}
-                        </H3>
-                        <Small className="mt-3">
-                          {project.description}
-                        </Small>
-                      </div>
-                      <div className="md:w-1/2">
-                        <Small className="font-medium text-foreground/60">
-                          {project.impact}
-                        </Small>
-                      </div>
+                <Link to={`/work/${project.slug}`} className="group block">
+                  <ProjectSlideshow
+                    images={project.images}
+                    alt={project.title}
+                    gradient={project.gradient}
+                    category={project.category}
+                  />
+                  <div className="mt-6 flex flex-col gap-4 md:flex-row md:gap-8">
+                    <div className="md:w-1/2">
+                      <H3 className="transition-colors group-hover:text-foreground/80">
+                        {project.title}
+                      </H3>
+                      <Small className="mt-3">{project.description}</Small>
                     </div>
-                  </StaggerItem>
+                    <div className="md:w-1/2">
+                      <Small className="font-medium text-foreground/60">
+                        {project.impact}
+                      </Small>
+                    </div>
+                  </div>
                 </Link>
-              </div>
+              </CaseCard>
             ))}
-          </Stagger>
+          </div>
         </section>
 
         {/* Open Source */}
+        <FadeIn>
         <section className="border-t py-24">
           <SectionLabel>Open Source</SectionLabel>
           <a
@@ -265,19 +272,8 @@ export default function Home() {
                 a built-in CRM plugin, and a full theming system. Daily driver.
               </Body>
               <div className="mt-4 flex flex-wrap gap-2">
-                {[
-                  "Electron",
-                  "React 18",
-                  "TypeScript",
-                  "Tailwind v4",
-                  "Jotai",
-                  "Vite",
-                  "AI / LLM",
-                ].map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground"
-                  >
+                {["Electron", "React 18", "TypeScript", "Tailwind v4", "Jotai", "Vite", "AI / LLM"].map((tag) => (
+                  <span key={tag} className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
                     {tag}
                   </span>
                 ))}
@@ -288,29 +284,33 @@ export default function Home() {
             </div>
           </a>
         </section>
+        </FadeIn>
 
         {/* What I Bring */}
+        <FadeIn>
         <section className="border-t py-24">
           <SectionLabel>What I Bring</SectionLabel>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {strengths.map((item) => (
               <div key={item.title} className="p-6">
                 <H3 className="text-base">{item.title}</H3>
-                <Small className="mt-2">
-                  {item.description}
-                </Small>
+                <Small className="mt-2">{item.description}</Small>
               </div>
             ))}
           </div>
         </section>
+        </FadeIn>
 
         {/* Philosophy callout */}
+        <FadeIn>
         <section className="border-t py-24">
-          <blockquote className="mx-auto max-w-3xl text-center"><Lead>
-            I care about building software that lasts — clean architecture,
-            honest trade-offs, and systems that the next engineer can actually
-            understand. I'd rather ship something solid than something flashy.
-          </Lead></blockquote>
+          <blockquote className="mx-auto max-w-3xl text-center">
+            <Lead>
+              I care about building software that lasts — clean architecture,
+              honest trade-offs, and systems that the next engineer can actually
+              understand. I'd rather ship something solid than something flashy.
+            </Lead>
+          </blockquote>
           <div className="mt-8 flex justify-center gap-4">
             <Button variant="outline" asChild>
               <Link to="/how-i-work">My approach</Link>
@@ -320,6 +320,7 @@ export default function Home() {
             </Button>
           </div>
         </section>
+        </FadeIn>
       </main>
 
       <SiteFooter />

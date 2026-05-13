@@ -1,5 +1,6 @@
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
+import { FadeIn } from "~/components/common/animate";
 
 export function meta() {
   return generateMeta({
@@ -58,6 +59,7 @@ const workingKnowledge = [
 export default function AboutPage() {
   return (
     <main className="mx-auto px-4 py-16" style={{ maxWidth: "650px" }}>
+      <FadeIn>
       <section className="mb-16">
         <H1>About</H1>
         <Lead className="mt-6">
@@ -88,7 +90,9 @@ export default function AboutPage() {
           with progress.
         </p>
       </section>
+      </FadeIn>
 
+      <FadeIn>
       <section className="mb-16 border-t pt-16">
         <SectionLabel>
           Side Projects
@@ -121,7 +125,9 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+      </FadeIn>
 
+      <FadeIn>
       <section className="border-t pt-16">
         <SectionLabel>
           Stack
@@ -159,6 +165,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </FadeIn>
     </main>
   );
 }

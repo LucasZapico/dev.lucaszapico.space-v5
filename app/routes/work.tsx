@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, Lead, Body, Small } from "~/components/common/typography";
-import { Stagger, StaggerItem } from "~/components/common/animate";
+import { FadeIn } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
 
 export function meta() {
@@ -97,77 +97,71 @@ const caseStudies = [
 export default function WorkPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-16">
-      <section className="mb-16">
-        <H1>Work</H1>
-        <Lead className="mt-4 max-w-2xl">
-          Real projects with real constraints. Every system here was
-          built around where the client actually was — their technical
-          ability, their operational reality, their timeline. End-to-end
-          ownership from discovery through deployment.
-        </Lead>
-      </section>
+      <FadeIn>
+        <section className="mb-16">
+          <H1>Work</H1>
+          <Lead className="mt-4 max-w-2xl">
+            Real projects with real constraints. Every system here was
+            built around where the client actually was — their technical
+            ability, their operational reality, their timeline. End-to-end
+            ownership from discovery through deployment.
+          </Lead>
+        </section>
+      </FadeIn>
 
-      <Stagger className="grid gap-12 md:grid-cols-2" stagger={0.15}>
+      <div className="grid gap-12 md:grid-cols-2">
         {caseStudies.map((study, i) => (
-          <div
-            key={study.slug}
-            className={i % 2 === 1 ? "md:mt-24" : ""}
-          >
-            <Link
-              to={`/work/${study.slug}`}
-              className="group block"
-            >
-              <StaggerItem>
-                <ProjectSlideshow
-                  images={study.images}
-                  alt={study.title}
-                  gradient={study.gradient}
-                  category={study.category}
-                />
-              </StaggerItem>
-              <StaggerItem>
-                <div className="mt-6 flex flex-col gap-4 md:flex-row md:gap-8">
-                  <div className="md:w-1/2">
-                    <H3 className="group-hover:text-foreground/80 transition-colors">
-                      {study.title}
-                    </H3>
-                    <Body className="mt-3">{study.description}</Body>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {study.tech.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="md:w-1/2">
-                    <Small className="font-medium text-foreground/60">
-                      {study.impact}
-                    </Small>
+          <FadeIn key={study.slug} delay={i % 2 === 1 ? 0.1 : 0} className={i % 2 === 1 ? "md:mt-24" : ""}>
+            <Link to={`/work/${study.slug}`} className="group block">
+              <ProjectSlideshow
+                images={study.images}
+                alt={study.title}
+                gradient={study.gradient}
+                category={study.category}
+              />
+              <div className="mt-6 flex flex-col gap-4 md:flex-row md:gap-8">
+                <div className="md:w-1/2">
+                  <H3 className="group-hover:text-foreground/80 transition-colors">
+                    {study.title}
+                  </H3>
+                  <Body className="mt-3">{study.description}</Body>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {study.tech.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              </StaggerItem>
+                <div className="md:w-1/2">
+                  <Small className="font-medium text-foreground/60">
+                    {study.impact}
+                  </Small>
+                </div>
+              </div>
             </Link>
-          </div>
+          </FadeIn>
         ))}
-      </Stagger>
+      </div>
 
-      <section className="mt-24 rounded-lg bg-secondary p-8 text-center">
-        <H2>Interested in working together?</H2>
-        <Body className="mt-2">
-          I'm looking for a full-stack role at a company that builds real
-          products. Let's talk.
-        </Body>
-        <Link
-          to="/contact"
-          className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Get in touch
-        </Link>
-      </section>
+      <FadeIn>
+        <section className="mt-24 rounded-lg bg-secondary p-8 text-center">
+          <H2>Interested in working together?</H2>
+          <Body className="mt-2">
+            I'm looking for a full-stack role at a company that builds real
+            products. Let's talk.
+          </Body>
+          <Link
+            to="/contact"
+            className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Get in touch
+          </Link>
+        </section>
+      </FadeIn>
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { caseStudies, caseStudyOrder } from "~/lib/case-studies";
 import { CaseHero } from "~/components/case-study/case-hero";
 import { CaseSectionRenderer } from "~/components/case-study/case-section";
 import { H2, H3, Body, Small } from "~/components/common/typography";
+import { FadeIn } from "~/components/common/animate";
 
 // ---------------------------------------------------------------------------
 // Route loader / meta
@@ -100,50 +101,54 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
       </article>
 
       {/* CTA */}
-      <div className="mx-auto mt-16 px-4" style={{ maxWidth: "650px" }}>
-        <div className="rounded-lg bg-secondary p-8 text-center">
-          <H2>Want to work together?</H2>
-          <Body className="mt-2">
-            I'm looking for a full-stack engineering role. Let's talk.
-          </Body>
-          <Link
-            to="/contact"
-            className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Get in touch
-          </Link>
+      <FadeIn>
+        <div className="mx-auto mt-16 px-4" style={{ maxWidth: "650px" }}>
+          <div className="rounded-lg bg-secondary p-8 text-center">
+            <H2>Want to work together?</H2>
+            <Body className="mt-2">
+              I'm looking for a full-stack engineering role. Let's talk.
+            </Body>
+            <Link
+              to="/contact"
+              className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Get in touch
+            </Link>
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
       {/* Prev / Next */}
-      <nav className="mx-auto mt-16 mb-16 grid grid-cols-2 gap-4 px-4" style={{ maxWidth: "650px" }}>
-        {prev ? (
-          <Link
-            to={`/work/${prev.slug}`}
-            className="group rounded-lg border border-border/50 p-5 transition-colors hover:border-border"
-          >
-            <Small className="text-muted-foreground/60">&larr; Previous</Small>
-            <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
-              {prev.title}
-            </H3>
-          </Link>
-        ) : (
-          <div />
-        )}
-        {next ? (
-          <Link
-            to={`/work/${next.slug}`}
-            className="group rounded-lg border border-border/50 p-5 text-right transition-colors hover:border-border"
-          >
-            <Small className="text-muted-foreground/60">Next &rarr;</Small>
-            <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
-              {next.title}
-            </H3>
-          </Link>
-        ) : (
-          <div />
-        )}
-      </nav>
+      <FadeIn>
+        <nav className="mx-auto mt-16 mb-16 grid grid-cols-2 gap-4 px-4" style={{ maxWidth: "650px" }}>
+          {prev ? (
+            <Link
+              to={`/work/${prev.slug}`}
+              className="group rounded-lg border border-border/50 p-5 transition-colors hover:border-border"
+            >
+              <Small className="text-muted-foreground/60">&larr; Previous</Small>
+              <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
+                {prev.title}
+              </H3>
+            </Link>
+          ) : (
+            <div />
+          )}
+          {next ? (
+            <Link
+              to={`/work/${next.slug}`}
+              className="group rounded-lg border border-border/50 p-5 text-right transition-colors hover:border-border"
+            >
+              <Small className="text-muted-foreground/60">Next &rarr;</Small>
+              <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
+                {next.title}
+              </H3>
+            </Link>
+          ) : (
+            <div />
+          )}
+        </nav>
+      </FadeIn>
     </main>
   );
 }

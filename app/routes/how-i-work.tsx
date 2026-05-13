@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
+import { FadeIn } from "~/components/common/animate";
 
 export function meta() {
   return generateMeta({
@@ -66,80 +67,85 @@ const thrive = [
 export default function ApproachPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-16">
-      <section className="mb-16">
-        <H1>Approach</H1>
-        <Lead className="mt-4 max-w-2xl">
-          How I think about building software — and what it's like to work
-          with me on a team.
-        </Lead>
-      </section>
+      <FadeIn>
+        <section className="mb-16">
+          <H1>Approach</H1>
+          <Lead className="mt-4 max-w-2xl">
+            How I think about building software — and what it's like to work
+            with me on a team.
+          </Lead>
+        </section>
+      </FadeIn>
 
       {/* Principles */}
       <section className="mb-24">
-        <SectionLabel>
-          Engineering Principles
-        </SectionLabel>
+        <FadeIn>
+          <SectionLabel>Engineering Principles</SectionLabel>
+        </FadeIn>
         <div className="mt-8 space-y-12">
           {principles.map((item) => (
-            <div key={item.step} className="grid gap-4 md:grid-cols-[80px_1fr]">
-              <span className="text-3xl font-bold text-muted-foreground/30">
-                {item.step}
-              </span>
-              <div>
-                <H3>{item.title}</H3>
-                <Body className="mt-2">
-                  {item.description}
-                </Body>
+            <FadeIn key={item.step}>
+              <div className="grid gap-4 md:grid-cols-[80px_1fr]">
+                <span className="text-3xl font-bold text-muted-foreground/30">
+                  {item.step}
+                </span>
+                <div>
+                  <H3>{item.title}</H3>
+                  <Body className="mt-2">{item.description}</Body>
+                </div>
               </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* Tools & Approach */}
       <section className="mb-24 border-t pt-16">
-        <SectionLabel>
-          Tools & Workflow
-        </SectionLabel>
+        <FadeIn>
+          <SectionLabel>Tools & Workflow</SectionLabel>
+        </FadeIn>
         <div className="mt-8 space-y-8">
           {tooling.map((item) => (
-            <div key={item.title}>
-              <H3>{item.title}</H3>
-              <Body className="mt-2">{item.description}</Body>
-            </div>
+            <FadeIn key={item.title}>
+              <div>
+                <H3>{item.title}</H3>
+                <Body className="mt-2">{item.description}</Body>
+              </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
       {/* Where I Thrive */}
       <section className="mb-24 border-t pt-16">
-        <SectionLabel>
-          Where I Thrive
-        </SectionLabel>
+        <FadeIn>
+          <SectionLabel>Where I Thrive</SectionLabel>
+        </FadeIn>
         <ul className="mt-8 space-y-4">
           {thrive.map((item) => (
-            <li
-              key={item}
-              className="border-l-2 border-muted-foreground/20 pl-4 text-muted-foreground"
-            >
-              {item}
-            </li>
+            <FadeIn key={item}>
+              <li className="border-l-2 border-muted-foreground/20 pl-4 text-muted-foreground">
+                {item}
+              </li>
+            </FadeIn>
           ))}
         </ul>
       </section>
 
-      <section className="rounded-lg bg-secondary p-8 text-center">
-        <H2>Sound like a fit?</H2>
-        <Body className="mt-2">
-          I'm looking for my next role. Let's talk.
-        </Body>
-        <Link
-          to="/contact"
-          className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Get in touch
-        </Link>
-      </section>
+      <FadeIn>
+        <section className="rounded-lg bg-secondary p-8 text-center">
+          <H2>Sound like a fit?</H2>
+          <Body className="mt-2">
+            I'm looking for my next role. Let's talk.
+          </Body>
+          <Link
+            to="/contact"
+            className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Get in touch
+          </Link>
+        </section>
+      </FadeIn>
     </main>
   );
 }

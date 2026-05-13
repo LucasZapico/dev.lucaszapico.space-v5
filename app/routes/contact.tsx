@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { SITE_CONFIG } from "~/lib/site-config";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
+import { FadeIn } from "~/components/common/animate";
 
 export function meta() {
   return generateMeta({
@@ -15,6 +16,7 @@ export function meta() {
 export default function ConnectPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-16">
+      <FadeIn>
       <section className="mb-16">
         <H1>Let's Connect</H1>
         <Lead className="mt-4 max-w-2xl">
@@ -23,7 +25,9 @@ export default function ConnectPage() {
           your team, I'd love to talk.
         </Lead>
       </section>
+      </FadeIn>
 
+      <FadeIn>
       <section className="grid gap-12 md:grid-cols-2">
         <div className="space-y-8">
           <div>
@@ -138,6 +142,7 @@ export default function ConnectPage() {
           </div>
         </div>
       </section>
+      </FadeIn>
     </main>
   );
 }
