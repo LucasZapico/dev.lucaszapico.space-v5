@@ -1,15 +1,21 @@
-import { isRouteErrorResponse, Link, Outlet } from "react-router";
+import { isRouteErrorResponse, Link, Outlet, useLocation } from "react-router";
 import { SiteHeader } from "~/components/layout/site-header";
 import { SiteFooter } from "~/components/layout/site-footer";
+import { PageTransition } from "~/components/common/page-transition";
+import { SiteEffects } from "~/components/common/site-effects";
 import { Button } from "~/components/ui/button";
 import type { Route } from "./+types/layout";
 
 export default function SiteLayout() {
+  const location = useLocation();
   return (
     <div className="min-h-screen">
       <SiteHeader />
+      <SiteEffects />
       <div className="pt-16">
-        <Outlet />
+        <PageTransition key={location.pathname}>
+          <Outlet />
+        </PageTransition>
       </div>
       <SiteFooter />
     </div>
