@@ -28,8 +28,8 @@ export default function ConnectPage() {
       </FadeIn>
 
       <FadeIn>
-      <section className="grid gap-12 md:grid-cols-2">
-        <div className="space-y-8">
+      <section className="grid grid-cols-12 gap-12">
+        <div className="col-span-12 space-y-8 md:col-span-6">
           <div>
             <SectionLabel>
               What I'm Looking For
@@ -100,7 +100,7 @@ export default function ConnectPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border bg-card p-8">
+        <div className="col-span-12 rounded-lg border bg-card p-8 md:col-span-6">
           <H2 className="text-xl">Quick Overview</H2>
           <div className="mt-6 space-y-4 text-sm text-muted-foreground">
             <div>

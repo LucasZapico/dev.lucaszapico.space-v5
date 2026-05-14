@@ -25,7 +25,7 @@ export function SiteFooter() {
   return (
     <footer ref={ref} className="overflow-hidden">
       <div style={gradientStyle}>
-        <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-48">
+        <div className="flex flex-col gap-12 px-8 py-48 md:px-12">
           <motion.div style={{ y: y1 }} className="flex flex-col gap-2 mix-blend-difference">
             <p className="font-heading text-3xl font-semibold text-white">
               {SITE_CONFIG.name}

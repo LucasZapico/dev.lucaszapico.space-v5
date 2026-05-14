@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
+import { Section } from "~/components/common/section";
 
 export function meta() {
   return generateMeta({
@@ -66,7 +67,7 @@ const thrive = [
 
 export default function ApproachPage() {
   return (
-    <main className="mx-auto max-w-4xl px-4 py-16">
+    <main className="px-8 py-16 md:px-12">
       <FadeIn>
         <section className="mb-16">
           <H1>Approach</H1>
@@ -78,14 +79,14 @@ export default function ApproachPage() {
       </FadeIn>
 
       {/* Principles */}
-      <section className="mb-24">
+      <Section padding="lg">
         <FadeIn>
           <SectionLabel>Engineering Principles</SectionLabel>
         </FadeIn>
-        <div className="mt-8 space-y-12">
+        <div className="mt-8 grid grid-cols-12 gap-x-8 gap-y-10">
           {principles.map((item) => (
-            <FadeIn key={item.step}>
-              <div className="grid gap-4 md:grid-cols-[80px_1fr]">
+            <FadeIn key={item.step} className="col-span-12 md:col-span-6">
+              <div className="grid grid-cols-[56px_1fr] gap-4">
                 <span className="text-3xl font-bold text-muted-foreground/30">
                   {item.step}
                 </span>
@@ -97,54 +98,55 @@ export default function ApproachPage() {
             </FadeIn>
           ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Tools & Approach */}
-      <section className="mb-24 border-t pt-16">
+      {/* Tools & Workflow */}
+      <Section padding="lg">
         <FadeIn>
           <SectionLabel>Tools & Workflow</SectionLabel>
         </FadeIn>
-        <div className="mt-8 space-y-8">
+        <div className="mt-8 grid grid-cols-12 gap-x-8 gap-y-8">
           {tooling.map((item) => (
-            <FadeIn key={item.title}>
-              <div>
-                <H3>{item.title}</H3>
-                <Body className="mt-2">{item.description}</Body>
-              </div>
+            <FadeIn key={item.title} className="col-span-12 md:col-span-4">
+              <H3>{item.title}</H3>
+              <Body className="mt-2">{item.description}</Body>
             </FadeIn>
           ))}
         </div>
-      </section>
+      </Section>
 
       {/* Where I Thrive */}
-      <section className="mb-24 border-t pt-16">
+      <Section padding="lg">
         <FadeIn>
           <SectionLabel>Where I Thrive</SectionLabel>
         </FadeIn>
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 grid grid-cols-12 gap-x-8 gap-y-4">
           {thrive.map((item) => (
-            <FadeIn key={item}>
+            <FadeIn key={item} className="col-span-12 md:col-span-6">
               <li className="border-l-2 border-muted-foreground/20 pl-4 text-muted-foreground">
                 {item}
               </li>
             </FadeIn>
           ))}
         </ul>
-      </section>
+      </Section>
 
+      {/* CTA — xl: closing CTA, one per page */}
       <FadeIn>
-        <section className="rounded-lg bg-secondary p-8 text-center">
-          <H2>Sound like a fit?</H2>
-          <Body className="mt-2">
-            I'm looking for my next role. Let's talk.
-          </Body>
-          <Link
-            to="/contact"
-            className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Get in touch
-          </Link>
-        </section>
+        <Section padding="xl">
+          <div className="rounded-lg bg-secondary p-8 text-center">
+            <H2>Sound like a fit?</H2>
+            <Body className="mt-2">
+              I'm looking for my next role. Let's talk.
+            </Body>
+            <Link
+              to="/contact"
+              className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Get in touch
+            </Link>
+          </div>
+        </Section>
       </FadeIn>
     </main>
   );

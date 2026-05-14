@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { generateMeta } from "~/lib/meta";
 import { H1, H3, Lead, Small, SectionLabel } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
+import { Section } from "~/components/common/section";
 import { Button } from "~/components/ui/button";
 import { builds, buildOrder, statusLabel, type BuildStatus } from "~/lib/builds";
 
@@ -142,15 +143,15 @@ export default function LabPage() {
       </FadeIn>
 
       {/* Builds */}
-      <section className="mb-24">
+      <Section padding="lg">
         <FadeIn>
           <SectionLabel>Builds</SectionLabel>
         </FadeIn>
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
+        <div className="mt-8 grid grid-cols-12 gap-6">
           {buildOrder.map((slug) => {
             const build = builds[slug];
             return (
-              <FadeIn key={slug}>
+              <FadeIn key={slug} className="col-span-12 md:col-span-6">
                 <Link
                   to={`/lab/${slug}`}
                   className="group flex h-full flex-col rounded-xl border bg-card p-6 transition-colors hover:border-foreground/20"
@@ -187,21 +188,19 @@ export default function LabPage() {
             );
           })}
         </div>
-      </section>
+      </Section>
 
       {/* Experiments */}
-      <section>
+      <Section padding="lg">
         <FadeIn>
           <SectionLabel>Experiments</SectionLabel>
           <p className="mt-2 text-sm text-muted-foreground">
             Micro-interactions and UI techniques — things built to understand how something works.
           </p>
         </FadeIn>
-      </section>
-
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-12 gap-6">
         {experiments.map((exp) => (
-          <FadeIn key={exp.id}>
+          <FadeIn key={exp.id} className="col-span-12 sm:col-span-6 lg:col-span-4">
             <div className="flex h-full flex-col rounded-xl border bg-card">
               <div className="flex min-h-[220px] items-center justify-center rounded-t-xl bg-secondary/60 p-8">
                 {exp.demo}
@@ -216,7 +215,8 @@ export default function LabPage() {
             </div>
           </FadeIn>
         ))}
-      </div>
+        </div>
+      </Section>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
+import { Section } from "~/components/common/section";
 
 export function meta() {
   return generateMeta({
@@ -93,7 +94,7 @@ export default function AboutPage() {
       </FadeIn>
 
       <FadeIn>
-      <section className="mb-16 border-t pt-16">
+      <Section padding="lg">
         <SectionLabel>
           Side Projects
         </SectionLabel>
@@ -124,11 +125,11 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </section>
+      </Section>
       </FadeIn>
 
       <FadeIn>
-      <section className="border-t pt-16">
+      <Section padding="lg">
         <SectionLabel>
           Stack
         </SectionLabel>
@@ -164,7 +165,7 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Section>
       </FadeIn>
     </main>
   );

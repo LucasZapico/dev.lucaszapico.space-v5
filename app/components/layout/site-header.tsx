@@ -19,7 +19,7 @@ export function SiteHeader() {
 
   return (
     <header className="fixed top-0 z-50 w-full bg-black/90 backdrop-blur-sm border-b border-white/10 mix-blend-difference">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+      <nav className="flex items-center justify-between px-8 py-4 md:px-12">
         <Link
           to="/"
           className="font-heading text-lg"
