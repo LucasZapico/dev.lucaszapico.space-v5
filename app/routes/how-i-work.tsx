@@ -67,7 +67,7 @@ const thrive = [
 
 export default function ApproachPage() {
   return (
-    <main className="px-8 py-16 md:px-12">
+    <main className="mx-auto max-w-6xl px-4 py-16">
       <FadeIn>
         <section className="mb-16">
           <H1>Approach</H1>

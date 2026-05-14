@@ -16,7 +16,7 @@ export default function ArticlesPage() {
   const list = articleOrder.map((slug) => articles[slug]).filter(Boolean);
 
   return (
-    <main className="px-8 py-16 md:px-12">
+    <main className="mx-auto max-w-6xl px-4 py-16">
       <Section padding="sm" as="div">
         <H1>Articles</H1>
         <Lead className="mt-4 max-w-2xl">
