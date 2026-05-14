@@ -3,6 +3,7 @@ import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, Lead, Body, Small } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
+import { Section } from "~/components/common/section";
 
 export function meta() {
   return generateMeta({
@@ -89,7 +90,12 @@ const caseStudies = [
     tech: ["React Router 7", "NestJS", "Directus", "Stripe", "Jotai"],
     featured: false,
     slug: "fly-fishing-guide",
-    images: [],
+    images: [
+      "/images/cases/fsff-home-01.webp",
+      "/images/cases/fsff-home-02.webp",
+      "/images/cases/fsfff-booking-01.webp",
+      "/images/cases/fsff-experiences-01.webp",
+    ],
     gradient: "linear-gradient(135deg, #1a8a8a 0%, #D4B44F 50%, #004D4D 100%)",
   },
 ];
@@ -109,9 +115,10 @@ export default function WorkPage() {
         </section>
       </FadeIn>
 
-      <div className="grid gap-12 md:grid-cols-2">
+      <Section padding="lg" divider={false}>
+      <div className="grid grid-cols-12 gap-12">
         {caseStudies.map((study, i) => (
-          <FadeIn key={study.slug} delay={i % 2 === 1 ? 0.1 : 0} className={i % 2 === 1 ? "md:mt-24" : ""}>
+          <FadeIn key={study.slug} delay={i % 2 === 1 ? 0.1 : 0} className={`col-span-12 md:col-span-6${i % 2 === 1 ? " md:mt-24" : ""}`}>
             <Link to={`/work/${study.slug}`} className="group block">
               <ProjectSlideshow
                 images={study.images}
@@ -146,9 +153,10 @@ export default function WorkPage() {
           </FadeIn>
         ))}
       </div>
+      </Section>
 
       <FadeIn>
-        <section className="mt-24 rounded-lg bg-secondary p-8 text-center">
+        <Section padding="xl" divider={false} as="div" className="rounded-lg bg-secondary p-8 text-center">
           <H2>Interested in working together?</H2>
           <Body className="mt-2">
             I'm looking for a full-stack role at a company that builds real
@@ -160,7 +168,7 @@ export default function WorkPage() {
           >
             Get in touch
           </Link>
-        </section>
+        </Section>
       </FadeIn>
     </main>
   );

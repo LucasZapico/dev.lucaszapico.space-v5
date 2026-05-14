@@ -28,6 +28,7 @@ export interface CaseStudy {
   impact: string;
   overview: string;
   heroImages: string[];
+  audio?: string;
   sections: CaseSection[];
 }
 
@@ -35,6 +36,7 @@ const caseStudyList: CaseStudy[] = [
   {
     title: "Glassblowing Studio Digital Platform",
     slug: "glassblowing-studio",
+    audio: "/audio/work/glassblowing-studio.mp3",
     category: "Commerce & Operations",
     tags: ["React Router 7", "NestJS", "Medusa v2", "Directus", "Stripe", "PostgreSQL", "Docker"],
     impact: "Unified five services behind one platform two artists can actually operate",
@@ -96,6 +98,7 @@ const caseStudyList: CaseStudy[] = [
   {
     title: "Internal Listing Intelligence Platform for a Real Estate Brokerage",
     slug: "real-estate-mls",
+    audio: "/audio/work/real-estate-mls.mp3",
     category: "Internal Tools",
     tags: ["Go", "PostgreSQL", "PostGIS", "React 19", "JWT", "OAuth 2.0", "Docker"],
     impact: "Gave brokers early visibility into off-market listings before they hit public MLS",
@@ -152,6 +155,7 @@ const caseStudyList: CaseStudy[] = [
   {
     title: "Memory Care & Assisted Living Search Platform",
     slug: "memory-care-platform",
+    audio: "/audio/work/memory-care-platform.mp3",
     category: "Marketplace",
     tags: ["React Router 7", "Express", "MongoDB", "Redis", "Zod", "Docker", "Data Pipeline"],
     impact: "Built a 26,000-listing care discovery platform from scratch — data pipeline to production deployment",
@@ -229,6 +233,7 @@ const caseStudyList: CaseStudy[] = [
   {
     title: "Therapist Practice Portal",
     slug: "therapist-portal",
+    audio: "/audio/work/therapist-portal.mp3",
     category: "Healthcare",
     tags: ["React Router 7", "NestJS", "PostgreSQL", "TypeORM", "Stripe", "Google Calendar", "Docker"],
     impact: "Replaced Calendly + Mailchimp + Google Docs with one unified system a therapist actually controls",
@@ -286,11 +291,18 @@ const caseStudyList: CaseStudy[] = [
   {
     title: "Fly Fishing Guide Booking Platform",
     slug: "fly-fishing-guide",
+    audio: "/audio/work/fly-fishing-guide.mp3",
     category: "Booking Platform",
     tags: ["React Router 7", "NestJS", "Directus", "Stripe", "Jotai", "React Email", "Docker"],
     impact: "Replaced text-message scheduling with a cross-filtering booking wizard",
     overview: "A Sacramento-area fly fishing guide had been managing his entire booking pipeline over text messages — losing track of dates, double-booking trips, and spending evenings juggling schedule threads instead of tying flies. He had no website, no calendar system, and no way for clients to understand what was even available without calling him. The constraint was that fly fishing availability is genuinely complex: it depends on season, target species, water body, and trip type, all of which interact. A standard date-picker booking flow would either oversimplify it or require the guide to manually maintain a matrix he didn't have time for.",
-    heroImages: [],
+    heroImages: [
+      "/images/cases/fsff-home-01.webp",
+      "/images/cases/fsff-home-02.webp",
+      "/images/cases/fsfff-booking-01.webp",
+      "/images/cases/fsfff-booking-02.webp",
+      "/images/cases/fsff-experiences-01.webp",
+    ],
     sections: [
       {
         heading: "My Role",
@@ -301,6 +313,8 @@ const caseStudyList: CaseStudy[] = [
       },
       {
         heading: "Approach",
+        variant: "side-by-side",
+        image: { src: "/images/cases/fsff-home-03.webp", alt: "Father and Son Fly Fishing — homepage showing trip discovery and seasonal content" },
         blocks: [
           { type: "text", html: "<strong>Monorepo with four workspaces</strong> (pnpm):" },
           { type: "list", items: [
@@ -314,6 +328,8 @@ const caseStudyList: CaseStudy[] = [
       },
       {
         heading: "The Booking Problem",
+        variant: "side-by-side",
+        image: { src: "/images/cases/fsfff-booking-02.webp", alt: "Father and Son Fly Fishing — cross-filtering booking wizard showing season, species, and water selection" },
         blocks: [
           { type: "text", html: "Fly fishing trips aren't like restaurant reservations or therapist appointments. You can't just pick a date and a time slot. Availability depends on four interdependent dimensions:" },
           { type: "list", items: [
@@ -338,6 +354,7 @@ const caseStudyList: CaseStudy[] = [
       },
       {
         heading: "What Was Hard",
+        image: { src: "/images/cases/fsff-experiences-01.webp", alt: "Father and Son Fly Fishing — trip experiences page showing guided fishing packages" },
         blocks: [
           { type: "text", html: "<strong>Modeling the availability matrix accurately.</strong> The fish-water-season relationships aren't simple lookups. Rainbow trout on the Lower Sacramento is a year-round tailwater fishery, but rainbow trout on the Upper Sacramento is a seasonal freestone fishery with a completely different window. The same species on different water has different availability. I had to model availability at the junction level (fish + water + month), not at the species level. This tripled the data entry for the guide, so I pre-seeded the matrix from his existing knowledge and built the Directus UI to make updates manageable." },
           { type: "text", html: "<strong>Making the wizard feel simple despite the complexity.</strong> Eight steps sounds like a lot. Early versions felt like a form interrogation. I iterated on the step ordering (month first, then party size, then trip type, then species/water) so that the heaviest filtering happens after the user has already committed to the easy choices. The \"Guide's Pick\" escape on species and water means most casual bookers only make 4 real decisions. Power users who know exactly what they want can be specific." },
