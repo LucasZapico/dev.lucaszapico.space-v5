@@ -16,6 +16,7 @@ RUN pnpm build
 
 # Production
 FROM base AS production
+RUN apk add --no-cache curl
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
