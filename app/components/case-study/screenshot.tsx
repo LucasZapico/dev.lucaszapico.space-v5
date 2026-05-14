@@ -28,13 +28,13 @@ export function ScreenshotPair({
   images: { src: string; alt?: string }[];
 }) {
   return (
-    <div className="not-prose my-12 md:my-16 -mx-4 md:-mx-12 lg:-mx-24 grid gap-4 md:grid-cols-2">
+    <div className="not-prose my-12 md:my-16 -mx-4 md:-mx-12 lg:-mx-24 grid grid-cols-12 gap-4">
       {images.map(({ src, alt }) => (
         <img
           key={src}
           src={src}
           alt={alt || ""}
-          className="w-full rounded-lg shadow-xl"
+          className="col-span-12 w-full rounded-lg shadow-xl md:col-span-6"
           loading="lazy"
         />
       ))}

@@ -6,6 +6,10 @@ import { CaseHero } from "~/components/case-study/case-hero";
 import { CaseSectionRenderer } from "~/components/case-study/case-section";
 import { H2, H3, Body, Small } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
+import { AudioPlayer } from "~/components/common/audio-player";
+import { Section } from "~/components/common/section";
+import { Prose } from "~/components/common/prose";
+import { FloatingNav } from "~/components/common/floating-nav";
 
 // ---------------------------------------------------------------------------
 // Route loader / meta
@@ -58,9 +62,9 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
   const next = nextSlug ? caseStudies[nextSlug] : null;
 
   return (
-    <main className="overflow-x-hidden">
+    <main>
       {/* Breadcrumbs */}
-      <nav className="mx-auto max-w-7xl px-4 pt-6">
+      <nav className="px-8 pt-6 md:px-12">
         <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <li>
             <Link to="/" className="transition-colors hover:text-foreground">
@@ -90,7 +94,14 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
         overview={study.overview}
       />
 
-      <article className="mx-auto px-4 py-8" style={{ maxWidth: "650px" }}>
+      {study.audio && (
+        <Prose className="px-8 pt-8 md:px-12">
+          <p className="mb-2 text-xs text-muted-foreground/60 uppercase tracking-widest">Listen</p>
+          <AudioPlayer src={study.audio} />
+        </Prose>
+      )}
+
+      <Prose size="lg" as="article" className="px-8 py-8 md:px-12">
         {study.sections.map((section, i) => (
           <CaseSectionRenderer
             key={section.heading}
@@ -98,57 +109,33 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
             index={i}
           />
         ))}
-      </article>
+      </Prose>
 
       {/* CTA */}
       <FadeIn>
-        <div className="mx-auto mt-16 px-4" style={{ maxWidth: "650px" }}>
-          <div className="rounded-lg bg-secondary p-8 text-center">
-            <H2>Want to work together?</H2>
-            <Body className="mt-2">
-              I'm looking for a full-stack engineering role. Let's talk.
-            </Body>
-            <Link
-              to="/contact"
-              className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Get in touch
-            </Link>
-          </div>
-        </div>
+        <Section padding="xl" as="div" className="px-8 md:px-12">
+          <Prose>
+            <div className="rounded-lg bg-secondary p-8 text-center">
+              <H2>Want to work together?</H2>
+              <Body className="mt-2">
+                I'm looking for a full-stack engineering role. Let's talk.
+              </Body>
+              <Link
+                to="/contact"
+                className="mt-6 inline-block rounded-md bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Get in touch
+              </Link>
+            </div>
+          </Prose>
+        </Section>
       </FadeIn>
 
-      {/* Prev / Next */}
-      <FadeIn>
-        <nav className="mx-auto mt-16 mb-16 grid grid-cols-2 gap-4 px-4" style={{ maxWidth: "650px" }}>
-          {prev ? (
-            <Link
-              to={`/work/${prev.slug}`}
-              className="group rounded-lg border border-border/50 p-5 transition-colors hover:border-border"
-            >
-              <Small className="text-muted-foreground/60">&larr; Previous</Small>
-              <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
-                {prev.title}
-              </H3>
-            </Link>
-          ) : (
-            <div />
-          )}
-          {next ? (
-            <Link
-              to={`/work/${next.slug}`}
-              className="group rounded-lg border border-border/50 p-5 text-right transition-colors hover:border-border"
-            >
-              <Small className="text-muted-foreground/60">Next &rarr;</Small>
-              <H3 className="mt-1 text-base group-hover:text-foreground/80 transition-colors">
-                {next.title}
-              </H3>
-            </Link>
-          ) : (
-            <div />
-          )}
-        </nav>
-      </FadeIn>
+      <FloatingNav
+        prev={prev ? { slug: prev.slug, title: prev.title, image: prev.heroImages?.[0] } : null}
+        next={next ? { slug: next.slug, title: next.title, image: next.heroImages?.[0] } : null}
+        basePath="/work"
+      />
     </main>
   );
 }

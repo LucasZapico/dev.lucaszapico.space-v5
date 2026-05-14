@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { H1, H3, Lead } from "~/components/common/typography";
+import { Prose } from "~/components/common/prose";
 
 interface CaseHeroProps {
   heroImages: string[];
@@ -46,7 +47,7 @@ export function CaseHero({
 
   return (
     <section className="mb-12 md:mb-16">
-      <div className="mx-auto max-w-7xl px-4 pt-4 md:pt-8">
+      <Prose size="xl" className="px-8 pt-4 md:px-12 md:pt-8">
         {/* Centered header block — 6 of 12 cols */}
         <div className="mt-8 grid grid-cols-12 md:mt-12">
           <div className="col-span-12 text-center md:col-span-6 md:col-start-4">
@@ -118,7 +119,7 @@ export function CaseHero({
             </div>
           )}
         </div>
-      </div>
+      </Prose>
     </section>
   );
 }
