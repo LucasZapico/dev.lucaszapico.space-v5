@@ -8,6 +8,7 @@ import { SITE_CONFIG } from "~/lib/site-config";
 export const navigation = [
   { name: "Work", href: "/work" },
   { name: "Lab", href: "/lab" },
+  { name: "Articles", href: "/articles" },
   { name: "Approach", href: "/how-i-work" },
   { name: "About", href: "/about" },
   { name: "Connect", href: "/contact" },

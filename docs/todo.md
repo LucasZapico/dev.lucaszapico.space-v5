@@ -19,3 +19,4 @@ Create from client work — gut client data, keep architecture. Pin once ready.
 - [ ] Remove or hide /docs route before production
 - [ ] OG image
 - [ ] Analytics (consider Plausible)
+- [ ] Article summary audio snippets — title + summary only (~15s each), skip full narration since code blocks are the substance; new generate-articles-audio.mjs following work audio pattern
