@@ -4,6 +4,9 @@ import { builds, buildOrder, statusLabel } from "~/lib/builds";
 import { SITE_CONFIG } from "~/lib/site-config";
 import { H1, H2, H3, Body, Small } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
+import { AudioPlayer } from "~/components/common/audio-player";
+import { Section } from "~/components/common/section";
+import { FloatingNav } from "~/components/common/floating-nav";
 
 export function loader({ params }: Route.LoaderArgs) {
   const slug = params.slug;
@@ -99,6 +102,13 @@ export default function LabBuildPage({ loaderData }: Route.ComponentProps) {
               ))}
             </div>
           )}
+
+          {build.audio && (
+            <div className="mt-6">
+              <p className="mb-2 text-xs text-muted-foreground/60 uppercase tracking-widest">Listen</p>
+              <AudioPlayer src={build.audio} />
+            </div>
+          )}
         </header>
       </FadeIn>
 
@@ -106,24 +116,24 @@ export default function LabBuildPage({ loaderData }: Route.ComponentProps) {
         {/* Problem */}
         {build.problem && (
           <FadeIn>
-            <section className="border-t pt-10 pb-12">
+            <Section padding="md" as="div">
               <H2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground mb-4">
                 The Problem
               </H2>
               <Body className="text-base leading-relaxed">{build.problem}</Body>
-            </section>
+            </Section>
           </FadeIn>
         )}
 
         {/* Overview */}
         <FadeIn>
-          <section className={`pb-12 ${build.problem ? "" : "border-t pt-10"}`}>
+          <Section padding="md" divider={!build.problem} as="div">
             <Body className="text-base leading-relaxed">{build.overview}</Body>
-          </section>
+          </Section>
         </FadeIn>
 
         {/* Highlights */}
-        <section className="border-t pt-10">
+        <Section padding="md" as="div">
           <FadeIn>
             <H2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
               What's interesting
@@ -139,40 +149,10 @@ export default function LabBuildPage({ loaderData }: Route.ComponentProps) {
               </FadeIn>
             ))}
           </div>
-        </section>
+        </Section>
       </article>
 
-      {/* Prev / Next */}
-      <FadeIn>
-        <nav className="mx-auto mt-8 mb-16 grid grid-cols-2 gap-4 px-4 max-w-3xl">
-          {prev ? (
-            <Link
-              to={`/lab/${prev.slug}`}
-              className="group rounded-lg border border-border/50 p-5 transition-colors hover:border-border"
-            >
-              <Small className="text-muted-foreground/60">&larr; Previous</Small>
-              <H3 className="mt-1 text-base transition-colors group-hover:text-foreground/80">
-                {prev.title}
-              </H3>
-            </Link>
-          ) : (
-            <div />
-          )}
-          {next ? (
-            <Link
-              to={`/lab/${next.slug}`}
-              className="group rounded-lg border border-border/50 p-5 text-right transition-colors hover:border-border"
-            >
-              <Small className="text-muted-foreground/60">Next &rarr;</Small>
-              <H3 className="mt-1 text-base transition-colors group-hover:text-foreground/80">
-                {next.title}
-              </H3>
-            </Link>
-          ) : (
-            <div />
-          )}
-        </nav>
-      </FadeIn>
+      <FloatingNav prev={prev} next={next} basePath="/lab" />
     </main>
   );
 }

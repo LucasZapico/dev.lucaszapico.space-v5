@@ -13,6 +13,7 @@ export interface Build {
   tagline: string;
   problem: string;
   overview: string;
+  audio?: string;
   stack: string[];
   highlights: BuildHighlight[];
   links: { label: string; href: string }[];
@@ -26,6 +27,7 @@ export const builds: Record<string, Build> = {
     status: "shipped",
     category: "Developer Tool",
     tagline: "Background code review daemon with multi-model consensus",
+    audio: "/audio/builds/spotter.mp3",
     problem: "Different models have different strengths and different blind spots. Claude is strong on architecture and reasoning but would sometimes roll over function-level bugs and missed optimisations, particularly in file-by-file review. We built Spotter to bring open code models into the loop as a dedicated audit layer, reviewing file by file and catching what Claude missed. The goal was to shift the human reviewer to a true final pass. Instead of doing full review from scratch, you're resolving flagged issues that have already been surfaced and cross-validated. The 'you should have caught this' category of bugs mostly disappears before the review even starts.",
     overview:
       "Spotter watches file changes and routes diffs to multiple LLMs in parallel. Ollama, OpenWebUI, Claude Code, or any OpenAI-compatible endpoint. It cross-validates findings before surfacing them. The goal was a zero-interruption review loop that runs while you work, not after you push.",
@@ -59,6 +61,7 @@ export const builds: Record<string, Build> = {
     status: "in-progress",
     category: "Platform",
     tagline: "Git-backed headless CMS with pluggable AI provider support",
+    audio: "/audio/builds/ai-cms.mp3",
     problem: "Every traditional CMS adds a non-trivial technical cost: wiring up components, validation, and guardrails in the CMS to mirror what already exists in the codebase. Hosted solutions charge ongoing fees. Self-hosted adds maintenance overhead. As a site grows with dynamic sections, highly styled custom components, and per-page layouts, the CMS integration grows in complexity right alongside it. Two systems, two validation layers, two sources of truth. The deeper problem is that content managers and developers are forced into completely different workflows for what is fundamentally the same task: changing a site. An AI CMS with git as the source of truth collapses that gap. The content manager gets an interface they can understand. The developer's existing guardrails bubble up and are enforced automatically, no duplication to manage. Page structure becomes configurable by the project owner, so a content manager can add or remove sections without a developer in the loop. This is what CMS tooling should look like.",
     overview:
       "A CMS where AI generates and edits content through a guardrails layer before anything touches disk or git. Works with any OpenAI-compatible endpoint: Anthropic, OpenAI, or a self-hosted Ollama instance. The core insight is that git should stay the source of truth, so AI edits go through the same review path as human edits: diff preview, branch, merge. The database only caches operational state (sessions, locks, review status).",
@@ -92,6 +95,7 @@ export const builds: Record<string, Build> = {
     status: "running",
     category: "ML Platform",
     tagline: "Infrastructure for running systematic ML trading experiments at scale",
+    audio: "/audio/builds/investment-platform.mp3",
     problem: "This started as an exploratory project with two goals: stress-test AI-assisted development on a genuinely hard problem, and learn the strengths and weaknesses of different ML training approaches across different data spaces. Algorithmic trading is a perfect whetstone. The problem space is well-defined, the feedback loop is honest, and the data challenges are real. Multi-source ingestion from Alpaca, Binance, CoinGecko, and GeckoTerminal, each with different schemas, gaps, and reliability characteristics. Model training across multiple timeframes, model types, feature groups, and position sizing strategies to understand where different approaches break down. Paper and live trading integrations with Alpaca and Binance, with strict validation and local ledger parity to catch any discrepancy between what the system thinks it did and what actually happened. A full frontend dashboard was built alongside the backend but was intentionally deprioritised. Keeping the UI in sync with rapidly changing model configurations added friction without adding signal. The honest result: capital protection models trained extremely well, showing strong resistance in bear and sideways markets. Generating consistent alpha is a harder problem. This is a project worth circling back to.",
     overview:
       "A platform built to run trading hypothesis experiments systematically at scale. 2,668 trained models tracked in PostgreSQL across binary and multi-class architectures, multiple timeframes, and dozens of feature group configurations. Each hypothesis lives in a YAML experiment config, not in code. A three-tier model gate enforces scientific rigour before any model touches live trading. Data pipelines pull from four sources, normalise across different schemas, and fill gaps continuously. The system runs on dedicated hardware with GPU-accelerated training on an RTX 4090 and paper trading sessions running around the clock.",
@@ -123,6 +127,7 @@ export const builds: Record<string, Build> = {
     status: "shipped",
     category: "Desktop App",
     tagline: "Complete frontend rewrite of Mailspring — threaded conversations, AI integration, and a built-in CRM",
+    audio: "/audio/builds/mailautumn.mp3",
     problem: "Moving from Mac to Linux meant losing Spark. There wasn't an email client on Linux with the same level of polish or feature set. That was the starting point. But the deeper problem is that a standard email inbox treats every type of email the same way: conversations with colleagues sit next to newsletters, receipts, automated updates, and formal threads where every reply repeats the same signature block. It's a single list for fundamentally different things. The goal was to build the client that fixed both: a solid Linux-native experience and a UI that understands what kind of email it's looking at. Conversations are formatted like Slack messages with signatures stripped. You see the actual new content, not the same block of text repeated six times. Newsletters get their own feed tab, laid out like an editorial feed rather than a list of unread items. Receipts surface the key detail at a glance without opening. Updates the same. Different types of communication, different interfaces.",
     overview:
       "A full rewrite of the Mailspring email client UI while keeping its battle-tested C++ sync engine. The goal was a modern, keyboard-first email experience with Slack-style threading, multi-provider AI assistance, and a lightweight CRM. Built as a daily driver, not a demo. 15,000+ lines of TypeScript across Electron main and React renderer.",
@@ -156,6 +161,7 @@ export const builds: Record<string, Build> = {
     status: "prototype",
     category: "Desktop App",
     tagline: "3D avatar conversation agent with emotion-aware animation",
+    audio: "/audio/builds/cortana.mp3",
     problem: "Most live AI listening agents are built around meeting transcripts. The ones that do have a conversational interface either have an awkward avatar or a UX that feels like a side thought. I wanted to build the experience I was actually looking for: a local, voice-first AI companion with a real sense of presence. The specific use cases I had in mind were interview prep with a mode that pushes on clarity and structure of answers, a speech coach that surfaces filler words and ums in real time, a mentor personality that cuts against the sycophantic tendency of most LLMs and gives direct feedback on goals and thinking, a colleague for brainstorming and working through ideas out loud, and a therapist mode for reflective conversation. Five distinct tools, one interface. I also had a vision for a unique illustrated avatar style but Three.js character work is harder than it looks and that part is parked for now. You can already upload your own avatar if you have one.",
     overview:
       "A Tauri desktop app that pairs any LLM with a 3D avatar that reacts to the conversation: mouth sync, eye blink, emotion-driven expressions, head movement. Voice goes in via Whisper, text goes to the model, the response drives both TTS and avatar state. Ships with five built-in personalities: Interviewer (structures and challenges your responses), Speech Coach (flags filler words and pacing), Mentor (direct feedback, no flattery), Colleague (open brainstorming partner), and Therapist (reflective, patient listening). Works with Anthropic, OpenAI, or any local model via Ollama.",
