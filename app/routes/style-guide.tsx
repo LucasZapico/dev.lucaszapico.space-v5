@@ -6,6 +6,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { Label } from "~/components/ui/label";
 import { FadeIn, Stagger, StaggerItem } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
+import { Section, paddingClasses, type SectionPadding } from "~/components/common/section";
 
 // Dev-only route — 404 in production
 export function loader() {
@@ -47,7 +48,7 @@ function CSSVarSwatch({ name, cssVar }: { name: string; cssVar: string }) {
 // ---------------------------------------------------------------------------
 // Section wrapper
 // ---------------------------------------------------------------------------
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function GuideSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="border-t py-16">
       <SectionLabel className="mb-8">{title}</SectionLabel>
@@ -73,7 +74,7 @@ export default function StyleGuidePage() {
       {/* ================================================================
           1. BRAND PALETTE — Hero gradient colors
           ================================================================ */}
-      <Section title="Brand Palette">
+      <GuideSection title="Brand Palette">
         <Body className="mb-6">
           Colors derived from the hero mesh gradient. These are the project's
           visual identity — use them for accent, illustration, and differentiation.
@@ -90,12 +91,12 @@ export default function StyleGuidePage() {
           accent tokens. Currently the site uses the default shadcn neutral
           palette. Consider promoting Deep Teal or Terracotta to --accent.
         </Body>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           2. DESIGN TOKENS — CSS custom properties
           ================================================================ */}
-      <Section title="Design Tokens">
+      <GuideSection title="Design Tokens">
         <Body className="mb-6">
           OKLCH-based CSS custom properties from shadcn/ui. All semantic colors
           respond to dark mode via the <code className="font-label text-sm">.dark</code> class.
@@ -132,12 +133,12 @@ export default function StyleGuidePage() {
             </div>
           ))}
         </div>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           3. TYPOGRAPHY
           ================================================================ */}
-      <Section title="Typography">
+      <GuideSection title="Typography">
         <div className="mb-8 flex gap-12">
           <div>
             <Small className="font-label mb-2 text-foreground">Headings</Small>
@@ -195,12 +196,12 @@ export default function StyleGuidePage() {
             <Body>This paragraph text uses pretty wrapping to prevent orphans and widows. The last line should never have a single word hanging alone, which makes the text feel more polished and intentional in longer passages.</Body>
           </div>
         </div>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           4. BUTTONS
           ================================================================ */}
-      <Section title="Buttons">
+      <GuideSection title="Buttons">
         <H3 className="mb-4">Variants</H3>
         <div className="flex flex-wrap items-center gap-4">
           <Button variant="default">Default</Button>
@@ -224,12 +225,12 @@ export default function StyleGuidePage() {
           <Button disabled>Disabled</Button>
         </div>
         <Small className="mt-2">Hover, active (scale-0.98), and focus-visible (ring) states are CSS-driven. Interact to test.</Small>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           5. FORM ELEMENTS
           ================================================================ */}
-      <Section title="Form Elements">
+      <GuideSection title="Form Elements">
         <div className="grid gap-8 md:grid-cols-2 max-w-2xl">
           <div className="space-y-2">
             <Label htmlFor="demo-name">Name</Label>
@@ -253,12 +254,12 @@ export default function StyleGuidePage() {
           </div>
         </div>
         <Small className="mt-4">Focus-visible shows ring in accent color. Invalid state shows destructive border + ring.</Small>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           6. PROJECT CARDS
           ================================================================ */}
-      <Section title="Card Variants">
+      <GuideSection title="Card Variants">
         <Body className="mb-8">
           Three card layouts used across the site. All share the same content
           pattern: title + description left, impact right (50/50 split on desktop,
@@ -398,12 +399,12 @@ export default function StyleGuidePage() {
             </div>
           ))}
         </div>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           6. HERO GRADIENT
           ================================================================ */}
-      <Section title="Mesh Gradients">
+      <GuideSection title="Mesh Gradients">
         <Body className="mb-6">
           Two keyframe states of the hero mesh gradient. 4 radial blobs + SVG fractal noise overlay.
         </Body>
@@ -439,12 +440,12 @@ export default function StyleGuidePage() {
             backgroundBlendMode: "overlay,normal,normal,normal,normal",
           }}
         />
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           7. ANIMATION / MOTION
           ================================================================ */}
-      <Section title="Animation">
+      <GuideSection title="Animation">
         <Body className="mb-6">
           All entrance animations are one-time (viewport: once). Scroll down to trigger.
         </Body>
@@ -472,12 +473,12 @@ export default function StyleGuidePage() {
             </StaggerItem>
           ))}
         </Stagger>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           8. PROJECT GRADIENTS
           ================================================================ */}
-      <Section title="Project Gradients">
+      <GuideSection title="Project Gradients">
         <Body className="mb-6">
           Per-project gradient backgrounds used as fallbacks when no screenshot is available.
         </Body>
@@ -495,36 +496,110 @@ export default function StyleGuidePage() {
             </div>
           ))}
         </div>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
-          9. SPACING REFERENCE
+          9. SECTION RHYTHM
           ================================================================ */}
-      <Section title="Spacing">
-        <Body className="mb-6">Tailwind default spacing scale. Common values used in this project:</Body>
+      <GuideSection title="Section Rhythm">
+        <Body className="mb-2">
+          Every page-level <code className="font-label text-sm">{`<Section>`}</code> uses one of four padding values.
+          Default is <code className="font-label text-sm">lg</code>. Deviate only with a named reason.
+        </Body>
+        <Body className="mb-8">
+          <code className="font-label text-sm">xl</code> is reserved for the section the reader's eye should rest on: a page hero, a page lead, or a closing CTA.{" "}
+          <strong>At most one <code className="font-label text-sm">xl</code> per page.</strong>
+        </Body>
+
+        {/* Scale table */}
+        <div className="mb-10 overflow-hidden rounded-lg border">
+          <table className="w-full font-label text-sm">
+            <thead>
+              <tr className="border-b bg-secondary/40">
+                <th className="px-4 py-3 text-left text-muted-foreground">size</th>
+                <th className="px-4 py-3 text-left text-muted-foreground">classes</th>
+                <th className="px-4 py-3 text-left text-muted-foreground">use for</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(
+                [
+                  { size: "sm", desc: "The visual IS the section — a big image, video, or showcase. Padding shouldn't compete with the asset." },
+                  { size: "md", desc: "Dense or sub-sections inside a long detail page (case studies, article body). Tighter rhythm signals \"I'm inside a chapter.\"" },
+                  { size: "lg", desc: "Default — most content blocks. If you don't have a reason, use this." },
+                  { size: "xl", desc: "Climactic — page hero, page lead, closing CTA. Max one per page." },
+                ] as { size: SectionPadding; desc: string }[]
+              ).map(({ size, desc }) => (
+                <tr key={size} className="border-b last:border-0">
+                  <td className="px-4 py-3 font-medium text-foreground">{size}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{paddingClasses[size]}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Live previews */}
+        <H3 className="text-base mb-6">Live previews</H3>
+        <div className="space-y-6">
+          {(["sm", "md", "lg", "xl"] as SectionPadding[]).map((size) => (
+            <div key={size} className="overflow-hidden rounded-lg border">
+              <div className="flex items-center justify-between bg-secondary/40 px-6 py-3">
+                <span className="font-label text-sm font-medium text-foreground">{size}</span>
+                <code className="font-label text-xs text-muted-foreground">{paddingClasses[size]}</code>
+              </div>
+              <div className="px-8 bg-background">
+                <div className={`border-t ${paddingClasses[size]}`}>
+                  <div className="h-2 w-20 rounded bg-foreground/10" />
+                  <div className="mt-3 h-2 w-44 rounded bg-foreground/10" />
+                  <div className="mt-2 h-2 w-36 rounded bg-foreground/10" />
+                </div>
+                <div className={`border-t ${paddingClasses[size]}`}>
+                  <div className="h-2 w-28 rounded bg-foreground/10" />
+                  <div className="mt-3 h-2 w-40 rounded bg-foreground/10" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Usage */}
+        <H3 className="text-base mt-10 mb-4">Usage</H3>
+        <div className="space-y-2 font-label text-xs text-muted-foreground/80">
+          <div><code className="text-foreground">{`<Section>`}</code> — default lg, border-t divider on</div>
+          <div><code className="text-foreground">{`<Section padding="md">`}</code> — tighter, still bordered</div>
+          <div><code className="text-foreground">{`<Section padding="xl">`}</code> — climactic, max one per page</div>
+          <div><code className="text-foreground">{`<Section divider={false}>`}</code> — no border-t (page intro, first section)</div>
+          <div><code className="text-foreground">{`<Section as="article">`}</code> — renders as article element</div>
+        </div>
+
+        {/* Component gap scale */}
+        <H3 className="text-base mt-10 mb-4">Component gap scale</H3>
+        <Small className="mb-4 block">Within a section — spacing between elements, not between sections.</Small>
         <div className="space-y-3">
           {[
-            { name: "gap-4 (1rem)", desc: "Tight — grid items, inline groups" },
-            { name: "gap-8 (2rem)", desc: "Standard — card content split" },
-            { name: "gap-10 (2.5rem)", desc: "Grid gap — project card grid" },
-            { name: "gap-12 (3rem)", desc: "Large — work page grid" },
-            { name: "mt-6 (1.5rem)", desc: "Image-to-content spacing" },
-            { name: "py-16 (4rem)", desc: "Section padding (inner pages)" },
-            { name: "py-24 (6rem)", desc: "Section padding (home page)" },
-            { name: "md:mt-24 (6rem)", desc: "Stagger offset (right column cards)" },
+            { cls: "gap-4",    rem: "1rem",   desc: "Tight — inline groups, tag chips, icon + label" },
+            { cls: "gap-6",    rem: "1.5rem", desc: "Default — form fields, stacked text blocks" },
+            { cls: "gap-8",    rem: "2rem",   desc: "Card content — image-to-copy, two-col splits" },
+            { cls: "gap-10",   rem: "2.5rem", desc: "Grid gap — project card grids" },
+            { cls: "gap-12",   rem: "3rem",   desc: "Large grid — work page cards" },
+            { cls: "mt-6",     rem: "1.5rem", desc: "Image-to-content spacing inside a card" },
+            { cls: "md:mt-24", rem: "6rem",   desc: "Stagger offset — right-column card in a 2-col grid" },
           ].map((s) => (
-            <div key={s.name} className="flex gap-4">
-              <code className="font-label text-sm text-foreground w-40 shrink-0">{s.name}</code>
+            <div key={s.cls} className="flex items-start gap-4">
+              <code className="font-label text-sm text-foreground w-28 shrink-0">{s.cls}</code>
+              <Small className="w-16 shrink-0 text-muted-foreground/50">{s.rem}</Small>
               <Small>{s.desc}</Small>
             </div>
           ))}
         </div>
-      </Section>
+      </GuideSection>
 
       {/* ================================================================
           10. RECOMMENDATIONS
           ================================================================ */}
-      <Section title="Resolved">
+      <GuideSection title="Resolved">
         <Body className="mb-4">
           Previously identified gaps that have been addressed:
         </Body>
@@ -539,9 +614,9 @@ export default function StyleGuidePage() {
             <Small key={item} className="border-l-2 border-accent pl-4 text-foreground/60">{item}</Small>
           ))}
         </div>
-      </Section>
+      </GuideSection>
 
-      <Section title="Remaining Gaps">
+      <GuideSection title="Remaining Gaps">
         <div className="space-y-4">
           {[
             {
@@ -562,7 +637,7 @@ export default function StyleGuidePage() {
             </div>
           ))}
         </div>
-      </Section>
+      </GuideSection>
     </main>
   );
 }
