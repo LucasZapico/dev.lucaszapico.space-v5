@@ -6,9 +6,10 @@ import { SiteHeader } from "~/components/layout/site-header";
 import { SiteFooter } from "~/components/layout/site-footer";
 import { generateMeta } from "~/lib/meta";
 import { H1, H2, H3, SectionLabel, Lead, Body, Small } from "~/components/common/typography";
-import { CountUp, WordStagger, FadeIn } from "~/components/common/animate";
+import { CountUp, WordStagger, FadeIn, TypeCycle } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
 import { SiteEffects } from "~/components/common/site-effects";
+import { Section } from "~/components/common/section";
 
 export function meta() {
   return generateMeta({
@@ -133,22 +134,34 @@ export default function Home() {
             backgroundBlendMode: "overlay,normal,normal,normal,normal",
           }}
         />
-        <div className="relative z-10 flex h-full min-h-[80vh] w-full flex-col justify-between pt-24 pb-8 px-8 md:pt-28 md:pb-12 md:px-12">
+        <div className="relative flex h-full min-h-[80vh] w-full flex-col justify-between pt-24 pb-8 px-8 md:pt-28 md:pb-12 md:px-12">
           <div className="flex items-start justify-between">
             <H1 className="text-white">
               <WordStagger>Full-stack engineer</WordStagger>
               <br />
               <span className="text-white/70">
-                <WordStagger delay={0.35}>who ships real systems</WordStagger>
+                <TypeCycle
+                  phrases={[
+                    "who ships real systems",
+                    "who owns the full stack",
+                    "who thinks in data flows",
+                    "who builds for the long run",
+                    "who turns complexity into clarity",
+                  ]}
+                />
               </span>
             </H1>
             <div className="hidden flex-col items-end gap-4 md:flex">
               <Button asChild>
                 <Link to="/work">See my work</Link>
               </Button>
-              <Button variant="outline" asChild>
-                <Link to="/contact" className="border-white/30 text-white hover:bg-white/10">
-                  Let's connect
+              <Button
+                variant="outline"
+                asChild
+                className="border-white/70 bg-transparent hover:bg-white/10 dark:bg-transparent dark:border-white/70"
+              >
+                <Link to="/contact">
+                  <span className="mix-blend-difference text-white">Let's connect</span>
                 </Link>
               </Button>
             </div>
@@ -173,9 +186,13 @@ export default function Home() {
             <Button asChild>
               <Link to="/work">See my work</Link>
             </Button>
-            <Button variant="outline" asChild>
-              <Link to="/contact" className="border-white/30 text-white hover:bg-white/10">
-                Let's connect
+            <Button
+              variant="outline"
+              asChild
+              className="border-white/70 bg-transparent hover:bg-white/10 dark:bg-transparent dark:border-white/70"
+            >
+              <Link to="/contact">
+                <span className="mix-blend-difference text-white">Let's connect</span>
               </Link>
             </Button>
           </div>
@@ -184,23 +201,23 @@ export default function Home() {
 
       <main className="mx-auto max-w-6xl px-4">
         {/* Credibility bar */}
-        <section className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-t py-8 font-label text-sm text-muted-foreground">
+        <Section padding="sm" className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 font-label text-sm text-muted-foreground">
           <span><CountUp to={8} suffix="+" /> years full-stack</span>
           <span className="hidden text-border sm:inline">|</span>
           <span><CountUp to={5} /> industries</span>
           <span className="hidden text-border sm:inline">|</span>
           <span>TypeScript, Go, Python</span>
-        </section>
+        </Section>
 
         {/* Selected Work */}
-        <section className="border-t py-24">
+        <Section padding="lg">
           <SectionLabel>Selected Work</SectionLabel>
-          <div className="mt-8 grid gap-10 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-12 gap-10">
             {featuredWork.map((project, i) => (
               <CaseCard
                 key={project.slug}
                 delay={i % 2 === 1 ? 0.15 : 0}
-                className={i % 2 === 1 ? "md:mt-24" : ""}
+                className={`col-span-12 md:col-span-6${i % 2 === 1 ? " md:mt-24" : ""}`}
               >
                 <Link to={`/work/${project.slug}`} className="group block">
                   <ProjectSlideshow
@@ -226,19 +243,19 @@ export default function Home() {
               </CaseCard>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* Open Source */}
         <FadeIn>
-        <section className="border-t py-24">
+        <Section padding="lg">
           <SectionLabel>Open Source</SectionLabel>
           <a
             href="https://github.com/LucasZapico/mailautumn"
             target="_blank"
             rel="noopener noreferrer"
-            className="group mt-8 flex flex-col gap-8 transition-colors hover:text-foreground/80 md:flex-row-reverse md:items-start"
+            className="group mt-8 grid grid-cols-12 items-start gap-8 transition-colors hover:text-foreground/80"
           >
-            <div className="md:w-1/2">
+            <div className="col-span-12 md:col-span-6 md:order-2">
               <ProjectSlideshow
                 images={[
                   "/images/mailautumn/mailautumn-01.webp",
@@ -257,7 +274,7 @@ export default function Home() {
                 aspect="1272/927"
               />
             </div>
-            <div className="md:w-1/2">
+            <div className="col-span-12 md:col-span-6 md:order-1">
               <span className="text-sm text-muted-foreground">
                 Electron + React + TypeScript
               </span>
@@ -283,27 +300,27 @@ export default function Home() {
               </span>
             </div>
           </a>
-        </section>
+        </Section>
         </FadeIn>
 
         {/* What I Bring */}
         <FadeIn>
-        <section className="border-t py-24">
+        <Section padding="lg">
           <SectionLabel>What I Bring</SectionLabel>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-12 gap-6">
             {strengths.map((item) => (
-              <div key={item.title} className="p-6">
+              <div key={item.title} className="col-span-12 p-6 md:col-span-4">
                 <H3 className="text-base">{item.title}</H3>
                 <Small className="mt-2">{item.description}</Small>
               </div>
             ))}
           </div>
-        </section>
+        </Section>
         </FadeIn>
 
-        {/* Philosophy callout */}
+        {/* Philosophy callout — xl: closing CTA, one per page */}
         <FadeIn>
-        <section className="border-t py-24">
+        <Section padding="xl">
           <blockquote className="mx-auto max-w-3xl text-center">
             <Lead>
               I care about building software that lasts — clean architecture,
@@ -319,7 +336,7 @@ export default function Home() {
               <Link to="/about">About me</Link>
             </Button>
           </div>
-        </section>
+        </Section>
         </FadeIn>
       </main>
 

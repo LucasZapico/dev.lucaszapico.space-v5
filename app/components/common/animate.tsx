@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { cn } from "~/lib/utils";
 
@@ -142,6 +142,65 @@ export function ScrollReveal({ children, className, yOffset = 60, delay = 0 }: S
         {children}
       </div>
     </div>
+  );
+}
+
+export function TypeCycle({
+  phrases,
+  className,
+  typingSpeed = 55,
+  deletingSpeed = 30,
+  pauseMs = 2200,
+}: {
+  phrases: string[];
+  className?: string;
+  typingSpeed?: number;
+  deletingSpeed?: number;
+  pauseMs?: number;
+}) {
+  const [displayed, setDisplayed] = useState("");
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[phraseIndex];
+
+    if (isPaused) {
+      const t = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, pauseMs);
+      return () => clearTimeout(t);
+    }
+
+    if (isDeleting) {
+      if (displayed.length === 0) {
+        setIsDeleting(false);
+        setPhraseIndex((i) => (i + 1) % phrases.length);
+        return;
+      }
+      const t = setTimeout(() => setDisplayed((d) => d.slice(0, -1)), deletingSpeed);
+      return () => clearTimeout(t);
+    }
+
+    if (displayed.length === current.length) {
+      setIsPaused(true);
+      return;
+    }
+
+    const t = setTimeout(
+      () => setDisplayed(current.slice(0, displayed.length + 1)),
+      typingSpeed,
+    );
+    return () => clearTimeout(t);
+  }, [displayed, phraseIndex, isDeleting, isPaused, phrases, typingSpeed, deletingSpeed, pauseMs]);
+
+  return (
+    <span className={cn("inline", className)}>
+      {displayed}
+      <span className="ml-0.5 inline-block w-[2px] animate-pulse bg-current align-middle" style={{ height: "0.85em" }} />
+    </span>
   );
 }
 
