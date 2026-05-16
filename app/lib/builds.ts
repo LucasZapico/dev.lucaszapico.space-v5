@@ -155,6 +155,40 @@ export const builds: Record<string, Build> = {
     ],
   },
 
+  monkeycode: {
+    slug: "monkeycode",
+    title: "MonkeyCode",
+    status: "shipped",
+    category: "Developer Tool",
+    tagline: "LeetCode-style coding practice with client-side execution, live variable inspection, and a Socratic AI tutor",
+    audio: "/audio/builds/monkeycode.mp3",
+    problem: "Interview prep platforms have two recurring failures. The first is execution latency: every keystroke that wants feedback round-trips to a sandboxed server, so the inner loop between writing code and seeing what it does is slow enough to break flow. The second is the help model. Most platforms either give you the full answer up front or hide it behind a paywall, and neither teaches you anything. I wanted a practice environment where running code felt instant, where you could see what every variable evaluated to as you typed, and where the help you asked for was real teaching, not just answer-reveal with a delay. The other open question was study material itself. Coding problems are well-covered ground, but the conceptual knowledge that surrounds them — language quirks, framework specifics, system design vocabulary — usually lives in a different tool. MonkeyCode folds both into one surface so the practice loop and the conceptual loop reinforce each other instead of fighting for attention.",
+    overview:
+      "A LeetCode-style platform with 20 problems across arrays, hash maps, two pointers, and graph patterns, plus a study mode for language/framework/topic Q&A. Code runs entirely in the browser via Web Workers — JavaScript through the Function constructor, Python through Pyodide — so there's no server-side execution boundary to wait on. Live eval mode parses your code with acorn at every change, instruments it with auto-logging calls, and surfaces inline variable values per line. The AI tutor is Socratic by design, runs on any Ollama-compatible endpoint, and won't hand you the solution.",
+    stack: ["React Router 7", "TypeScript", "Tailwind v4", "PostgreSQL", "Prisma", "Monaco", "Pyodide", "Acorn", "Ollama"],
+    highlights: [
+      {
+        title: "Client-side execution as the architectural cut",
+        body: "There is no server-side code runner. JavaScript runs in a Web Worker through the Function constructor; Python runs in a Pyodide worker. The trade-off is upfront cost — Pyodide is a multi-megabyte WASM payload — but the payoff is that every run, every test, every live-eval keystroke is microseconds away. No sandbox provisioning, no rate limits, no infrastructure to scale. The whole platform could run as a static site if the AI tutor were optional.",
+      },
+      {
+        title: "Live eval via AST instrumentation",
+        body: "When live eval is enabled, every code change goes through an acorn-based instrumenter that walks the AST and injects __auto__(line, name, value) calls after every variable binding — including destructured ones, assignment patterns, and rest elements. The instrumented code runs in a separate worker on a debounce, and the captured values are rendered next to their source lines in Monaco. You see what every variable holds as you type without ever clicking run.",
+      },
+      {
+        title: "Socratic AI tutor with hard guardrails",
+        body: "The tutor prompt is explicit: never give the answer, always ask a question that pushes the user one step toward it. Backed by any OpenAI-compatible endpoint (Ollama, Open WebUI, vLLM), so it can run fully local. Study mode uses the same model with a different prompt to evaluate free-response answers against a rubric, with Learn/Practice/Test modes and spaced repetition for follow-ups.",
+      },
+      {
+        title: "Per-problem optimal complexity targets",
+        body: "Each problem ships with an authoritative time and space complexity in the seed data. After a successful submission, users enter their own Big-O analysis and the system compares it against the optimum. Right answer with O(n²) when O(n) is possible is still a learning moment, and surfacing it explicitly turns passing tests into a starting point rather than the end of the exercise.",
+      },
+    ],
+    links: [
+      { label: "GitHub", href: "https://github.com/LucasZapico/monkeycode" },
+    ],
+  },
+
   cortana: {
     slug: "cortana",
     title: "Cortana",
@@ -190,7 +224,7 @@ export const builds: Record<string, Build> = {
   },
 };
 
-export const buildOrder = ["spotter", "mailautumn", "ai-cms", "investment-platform", "cortana"];
+export const buildOrder = ["spotter", "mailautumn", "monkeycode", "ai-cms", "investment-platform", "cortana"];
 
 export const statusLabel: Record<BuildStatus, string> = {
   shipped: "Shipped",
