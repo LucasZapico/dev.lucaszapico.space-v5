@@ -5,6 +5,8 @@ import { Button } from "~/components/ui/button";
 import { SiteHeader } from "~/components/layout/site-header";
 import { SiteFooter } from "~/components/layout/site-footer";
 import { generateMeta } from "~/lib/meta";
+import { personSchema, webSiteSchema } from "~/lib/schema";
+import { JsonLd } from "~/components/common/json-ld";
 import { H1, H2, H3, SectionLabel, Lead, Body, Small } from "~/components/common/typography";
 import { CountUp, WordStagger, FadeIn, TypeCycle } from "~/components/common/animate";
 import { ProjectSlideshow } from "~/components/common/project-slideshow";
@@ -121,6 +123,7 @@ function CaseCard({ children, className, delay = 0 }: { children: React.ReactNod
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <JsonLd data={[personSchema(), webSiteSchema()]} />
       <SiteHeader />
       <SiteEffects />
 

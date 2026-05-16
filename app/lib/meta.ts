@@ -10,6 +10,7 @@ interface MetaOptions {
   path?: string;
   image?: string;
   imageAlt?: string;
+  ogType?: "website" | "article";
 }
 
 export function generateMeta({
@@ -18,6 +19,7 @@ export function generateMeta({
   path = "",
   image = DEFAULT_OG_IMAGE,
   imageAlt,
+  ogType = "website",
 }: MetaOptions) {
   const url = `${SITE_CONFIG.website}${path}`;
   const imageUrl = image.startsWith("http")
@@ -29,7 +31,7 @@ export function generateMeta({
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:url", content: url },
-    { property: "og:type", content: "website" },
+    { property: "og:type", content: ogType },
     { property: "og:site_name", content: SITE_CONFIG.name },
     { property: "og:image", content: imageUrl },
     { property: "og:image:width", content: OG_IMAGE_WIDTH },

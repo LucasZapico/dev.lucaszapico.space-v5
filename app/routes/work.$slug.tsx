@@ -1,7 +1,9 @@
 import { Link, data } from "react-router";
 import type { Route } from "./+types/work.$slug";
-import { SITE_CONFIG } from "~/lib/site-config";
 import { caseStudies, caseStudyOrder } from "~/lib/case-studies";
+import { generateMeta } from "~/lib/meta";
+import { caseStudySchema } from "~/lib/schema";
+import { JsonLd } from "~/components/common/json-ld";
 import { CaseHero } from "~/components/case-study/case-hero";
 import { CaseSectionRenderer } from "~/components/case-study/case-section";
 import { H2, H3, Body, Small } from "~/components/common/typography";
@@ -27,21 +29,14 @@ export function meta({ params }: Route.MetaArgs) {
   const slug = params.slug;
   const study = slug ? caseStudies[slug] : undefined;
   if (!study) return [];
-  const title = `${study.title} — Lucas Zapico`;
-  const description = `Case study: ${study.title}`;
-  const url = `${SITE_CONFIG.website}/work/${slug}`;
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:url", content: url },
-    { property: "og:type", content: "article" },
-    { property: "og:site_name", content: SITE_CONFIG.name },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ];
+  return generateMeta({
+    title: `${study.title} — Lucas Zapico`,
+    description: study.impact,
+    path: `/work/${slug}`,
+    image: study.heroImages?.[0],
+    imageAlt: study.title,
+    ogType: "article",
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -63,6 +58,7 @@ export default function CaseStudyPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
+      <JsonLd data={caseStudySchema(study)} />
       {/* Breadcrumbs */}
       <nav className="px-8 pt-6 md:px-12">
         <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">

@@ -1,7 +1,9 @@
 import { Link, data } from "react-router";
 import type { Route } from "./+types/lab.$slug";
 import { builds, buildOrder, statusLabel } from "~/lib/builds";
-import { SITE_CONFIG } from "~/lib/site-config";
+import { generateMeta } from "~/lib/meta";
+import { buildSchema } from "~/lib/schema";
+import { JsonLd } from "~/components/common/json-ld";
 import { H1, H2, H3, Body, Small } from "~/components/common/typography";
 import { FadeIn } from "~/components/common/animate";
 import { AudioPlayer } from "~/components/common/audio-player";
@@ -20,17 +22,14 @@ export function meta({ params }: Route.MetaArgs) {
   const slug = params.slug;
   const build = slug ? builds[slug] : undefined;
   if (!build) return [];
-  const title = `${build.title} — Lab — Lucas Zapico`;
-  const description = build.tagline;
-  const url = `${SITE_CONFIG.website}/lab/${slug}`;
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:url", content: url },
-    { property: "og:type", content: "article" },
-  ];
+  return generateMeta({
+    title: `${build.title} — Lab — Lucas Zapico`,
+    description: build.tagline,
+    path: `/lab/${slug}`,
+    image: build.image,
+    imageAlt: build.title,
+    ogType: "article",
+  });
 }
 
 const statusColors: Record<string, string> = {
@@ -52,6 +51,7 @@ export default function LabBuildPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="overflow-x-hidden">
+      <JsonLd data={buildSchema(build)} />
       {/* Breadcrumbs */}
       <nav className="mx-auto max-w-3xl px-4 pt-6">
         <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">

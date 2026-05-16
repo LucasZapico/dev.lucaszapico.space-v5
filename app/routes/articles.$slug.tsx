@@ -1,7 +1,9 @@
 import { Link, data } from "react-router";
 import type { Route } from "./+types/articles.$slug";
 import { articles, articleOrder } from "~/lib/articles";
-import { SITE_CONFIG } from "~/lib/site-config";
+import { generateMeta } from "~/lib/meta";
+import { articleSchema } from "~/lib/schema";
+import { JsonLd } from "~/components/common/json-ld";
 import { H1, H2, H3, Body, Small } from "~/components/common/typography";
 import { Section } from "~/components/common/section";
 import { Prose } from "~/components/common/prose";
@@ -19,16 +21,12 @@ export function meta({ params }: Route.MetaArgs) {
   const slug = params.slug;
   const article = slug ? articles[slug] : undefined;
   if (!article) return [];
-  const title = `${article.title} — Lucas Zapico`;
-  const url = `${SITE_CONFIG.website}/articles/${slug}`;
-  return [
-    { title },
-    { name: "description", content: article.summary },
-    { property: "og:title", content: title },
-    { property: "og:description", content: article.summary },
-    { property: "og:url", content: url },
-    { property: "og:type", content: "article" },
-  ];
+  return generateMeta({
+    title: `${article.title} — Lucas Zapico`,
+    description: article.summary,
+    path: `/articles/${slug}`,
+    ogType: "article",
+  });
 }
 
 function renderPara(text: string) {
@@ -52,6 +50,7 @@ export default function ArticlePage({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
+      <JsonLd data={articleSchema(article)} />
       <nav className="px-8 pt-6 md:px-12">
         <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <li>
