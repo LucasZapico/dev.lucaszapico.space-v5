@@ -30,9 +30,10 @@ export function FloatingNav({ prev, next, basePath }: FloatingNavProps) {
           )}
           <Link
             to={`${basePath}/${prev.slug}`}
+            aria-label={`Previous: ${prev.title}`}
             className="flex items-center gap-2 rounded-full border bg-background/80 px-4 py-2 text-sm shadow-lg backdrop-blur-sm transition-colors hover:bg-background"
           >
-            <span>←</span>
+            <span aria-hidden>←</span>
             <span className="max-w-[160px] truncate">{prev.title}</span>
           </Link>
         </div>
@@ -50,10 +51,11 @@ export function FloatingNav({ prev, next, basePath }: FloatingNavProps) {
           )}
           <Link
             to={`${basePath}/${next.slug}`}
+            aria-label={`Next: ${next.title}`}
             className="flex items-center gap-2 rounded-full border bg-background/80 px-4 py-2 text-sm shadow-lg backdrop-blur-sm transition-colors hover:bg-background"
           >
-            <span>→</span>
             <span className="max-w-[160px] truncate">{next.title}</span>
+            <span aria-hidden>→</span>
           </Link>
         </div>
       ) : <div />}
