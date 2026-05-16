@@ -81,3 +81,10 @@ Component built and working but motion still feels stuttery. Hidden from `/lab` 
 - [ ] Try `transform: translateZ(0)` on the layer wrapper, not just children, to force a single composite layer for the whole parallax group
 - [ ] Consider `<img src="/lab/flower.svg">` over inline SVG — browsers cache rasterized images better than re-rasterizing SVG paths each layer
 - [ ] Profile with Chrome perf panel during the stutter — look for long paint/composite frames
+
+## For Review — Sticky Bottom Bar (idea)
+Persistent thin bar at bottom of viewport with a couple of playful affordances. Low commitment, dismissible.
+- [ ] "Tell me a developer joke" button — pulls from a local joke database (JSON), rotates on click, maybe with a copy-to-clipboard. No external API needed.
+- [ ] "Play a game" entry point — single button that links to `/lab` games (Space Invaders / Snake / Minesweeper) if those ship
+- [ ] Dismissible with localStorage so it doesn't nag returning visitors
+- [ ] Decision: does this clash with the serious-portfolio tone, or reinforce the "playful + competent" angle? Could live only on `/lab` rather than site-wide to keep case-study pages clean
