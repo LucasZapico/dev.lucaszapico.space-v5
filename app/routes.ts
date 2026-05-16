@@ -15,6 +15,7 @@ export default [
     route("lab/:slug", "routes/lab.$slug.tsx"),
     route("how-i-work", "routes/how-i-work.tsx"),
     route("articles", "routes/articles.tsx"),
+    route("articles/:slug", "routes/articles.$slug.tsx"),
     route("about", "routes/about.tsx"),
     route("contact", "routes/contact.tsx"),
     route("docs", "routes/docs.tsx"),
