@@ -72,3 +72,12 @@ Open question. Could read as playful + demonstrates frontend chops, or could rea
 - [ ] Snake
 - [ ] Minesweeper
 - [ ] Decision: ship one polished or all three rough, or skip entirely? Consider hiding behind `/lab` (it's already an experimental surface) so it doesn't compete with case studies for hiring-manager attention
+
+## Lab — Parallax Flowers (shelved 2026-05-15)
+Component built and working but motion still feels stuttery. Hidden from `/lab` for now; circle back to make it feel buttery before re-enabling.
+- Files kept: `app/components/lab/scroll-parallax.tsx`, `public/lab/flower.svg`
+- Current state: 6 layers, lerp-based easing (per-layer ease 0.105–0.175), `contain: layout paint`, no blur
+- [ ] Investigate why scroll input still feels chunky despite rAF lerp loop — possibly modal's `overflow-y: auto` snap, possibly trackpad vs wheel input differences. Try smooth-scroll polyfill (Lenis-style) on the modal scroll container instead of per-layer easing
+- [ ] Try `transform: translateZ(0)` on the layer wrapper, not just children, to force a single composite layer for the whole parallax group
+- [ ] Consider `<img src="/lab/flower.svg">` over inline SVG — browsers cache rasterized images better than re-rasterizing SVG paths each layer
+- [ ] Profile with Chrome perf panel during the stutter — look for long paint/composite frames
