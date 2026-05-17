@@ -3,10 +3,21 @@
 # Coolify bootstrap for dev.lucaszapico.space-v5
 # Creates the app on hetzner-blue-1 with auto-deploy on push to master.
 #
+# IMPORTANT: Coolify binds an app to a GitHub App at CREATE time and the
+# binding cannot be changed afterwards — re-creating the app is the only
+# way to swap sources. Pick the right App for the repo's owner:
+#
+#   LucasZapico/*    → coolify-lucas-zapico  (sk86r0mhdvr2030k5hrkypzt)
+#   bluemonkeymakes/* → coolifybluemonkey    (g048oc4gs8g4484gogo00k8c)
+#
+# Using the wrong App silently breaks auto-deploy: pushes succeed on
+# GitHub, but the App has no permission to deliver webhook events for
+# the other owner's repos, so Coolify never hears about new commits.
+#
 # Prerequisites:
 #   1. `pass coolify/api-key` holds the Coolify API token
-#   2. The GitHub App in Coolify has access to this repo
-#      (GitHub Settings > Applications > coolifybluemonkey > Configure)
+#   2. The matching GitHub App has access to this repo
+#      (GitHub Settings > Applications > coolify-lucas-zapico > Configure)
 #   3. Code is pushed to LucasZapico/dev.lucaszapico.space-v5
 #
 # Usage:
@@ -18,7 +29,7 @@ set -euo pipefail
 API="https://coolify.bluemonkeymakes.com/api/v1"
 SERVER_UUID="vo8cgoo0wkc4404occscco88"   # hetzner-blue-1
 PROJECT_UUID="ioc0skoc48808ggkcok0gooc"  # LucasZapico
-GITHUB_APP_UUID="g048oc4gs8g4484gogo00k8c"
+GITHUB_APP_UUID="sk86r0mhdvr2030k5hrkypzt"  # coolify-lucas-zapico (personal repos)
 APP_NAME="dev-lucaszapico-space-v5"
 REPO="LucasZapico/dev.lucaszapico.space-v5"
 BRANCH="master"
@@ -63,11 +74,14 @@ curl -sf -X PATCH \
 
 echo ""
 echo "==> Setting domain: $DOMAIN"
+# Note: do NOT pass ?force_domain_override=true — Coolify's API tries to
+# write that query param into the SQL UPDATE statement and 500s
+# ("column force_domain_override does not exist"). Plain PATCH works.
 curl -sf -X PATCH \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"domains\": \"$DOMAIN\"}" \
-  "$API/applications/$APP_UUID?force_domain_override=true" > /dev/null
+  "$API/applications/$APP_UUID" > /dev/null
 
 echo ""
 echo "==> Triggering first deploy..."
