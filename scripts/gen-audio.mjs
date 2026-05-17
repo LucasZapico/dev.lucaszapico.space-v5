@@ -14,7 +14,9 @@
 // ---------------------------------------------------------------------------
 
 import crypto from "node:crypto";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { readFile, writeFile, mkdir, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -152,11 +154,45 @@ async function fetchTTS(text) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+// Kokoro returns raw CBR MP3 frames with no Info/Xing header. Browsers
+// without that header report `audio.duration` as Infinity until the whole
+// file is scanned, which causes "NaN" in player UIs. Remux through ffmpeg
+// with -write_xing 1 to add the header — no re-encode, milliseconds per file.
+//
+// ffmpeg needs a seekable output target to write the Xing header at the
+// start of the file, so we pipe input via stdin but write to a temp file.
+async function addXingHeader(mp3Buffer) {
+  const tmpOut = join(tmpdir(), `gen-audio-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.mp3`);
+  try {
+    await new Promise((resolve, reject) => {
+      const ff = spawn("ffmpeg", [
+        "-hide_banner", "-loglevel", "error", "-y",
+        "-i", "pipe:0",
+        "-c:a", "copy",
+        "-write_xing", "1",
+        tmpOut,
+      ]);
+      let stderr = "";
+      ff.stderr.on("data", (c) => { stderr += c.toString(); });
+      ff.on("error", reject);
+      ff.on("close", (code) => {
+        if (code !== 0) reject(new Error(`ffmpeg exit ${code}: ${stderr.slice(0, 200)}`));
+        else resolve();
+      });
+      ff.stdin.end(mp3Buffer);
+    });
+    return await readFile(tmpOut);
+  } finally {
+    await unlink(tmpOut).catch(() => {});
+  }
+}
+
 for (const s of stale) {
   const words = s.text.split(/\s+/).length;
   process.stdout.write(`  ${s.key.padEnd(40)} ${words} words … `);
   try {
-    const mp3 = await fetchTTS(s.text);
+    const raw = await fetchTTS(s.text);
+    const mp3 = await addXingHeader(raw);
     await mkdir(dirname(s.out), { recursive: true });
     await writeFile(s.out, mp3);
     manifest[s.key] = s.hash;

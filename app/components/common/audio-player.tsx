@@ -59,6 +59,10 @@ export function AudioPlayer({ src }: { src: string }) {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   }
 
+  // Some MP3s without an Info/Xing header report duration as Infinity until
+  // the whole file has been scanned. Guard against both Infinity and NaN.
+  const hasDuration = Number.isFinite(duration) && duration > 0;
+
   return (
     <div className="flex items-center gap-3 rounded-lg border bg-secondary/40 px-4 py-3">
       <audio
@@ -94,7 +98,7 @@ export function AudioPlayer({ src }: { src: string }) {
         />
       </div>
       <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
-        {duration > 0 ? fmt(progress * duration) : "0:00"} / {duration > 0 ? fmt(duration) : "--:--"}
+        {hasDuration ? fmt(progress * duration) : "0:00"} / {hasDuration ? fmt(duration) : "--:--"}
       </span>
       <button
         onClick={cycleSpeed}
