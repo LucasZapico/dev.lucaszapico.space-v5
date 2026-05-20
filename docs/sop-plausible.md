@@ -87,8 +87,10 @@ In Coolify (production):
 
 ```
 PLAUSIBLE_DOMAIN=dev.lucaszapico.space
-PLAUSIBLE_API_HOST=https://plausible.io
+PLAUSIBLE_API_HOST=https://analytics.bluemonkeymakes.com
 ```
+
+> BMM runs a self-hosted Plausible CE instance at `analytics.bluemonkeymakes.com` (Coolify service on nextron). Point all BMM/Lucas projects there — not `plausible.io`.
 
 ### 6. Verify
 
