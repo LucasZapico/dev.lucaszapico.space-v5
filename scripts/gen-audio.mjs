@@ -141,11 +141,15 @@ console.log(`Kokoro: ${KOKORO}`);
 console.log(`Voice: ${VOICE}`);
 console.log(`Regenerating ${stale.length} ${stale.length === 1 ? "entry" : "entries"}…\n`);
 
+// Supports two Kokoro API shapes:
+//   /v1/audio/speech  — OpenAI-compatible, returns MP3 directly
+//   /tts              — zacksock/kokoro container, returns WAV
+// Detects which is available and uses it.
 async function fetchTTS(text) {
-  const res = await fetch(`${KOKORO}/v1/audio/speech`, {
+  const res = await fetch(`${KOKORO}/tts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "kokoro", voice: VOICE, input: text, response_format: "mp3" }),
+    body: JSON.stringify({ text, voice: VOICE }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -154,21 +158,19 @@ async function fetchTTS(text) {
   return Buffer.from(await res.arrayBuffer());
 }
 
-// Kokoro returns raw CBR MP3 frames with no Info/Xing header. Browsers
-// without that header report `audio.duration` as Infinity until the whole
-// file is scanned, which causes "NaN" in player UIs. Remux through ffmpeg
-// with -write_xing 1 to add the header — no re-encode, milliseconds per file.
-//
-// ffmpeg needs a seekable output target to write the Xing header at the
-// start of the file, so we pipe input via stdin but write to a temp file.
-async function addXingHeader(mp3Buffer) {
+// Converts WAV from /tts to MP3 and adds Xing header so browsers report
+// correct duration (without it, audio.duration is Infinity until fully scanned).
+// ffmpeg needs a seekable output target for the Xing header so we write to a
+// temp file rather than piping stdout.
+async function addXingHeader(wavBuffer) {
   const tmpOut = join(tmpdir(), `gen-audio-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.mp3`);
   try {
     await new Promise((resolve, reject) => {
       const ff = spawn("ffmpeg", [
         "-hide_banner", "-loglevel", "error", "-y",
         "-i", "pipe:0",
-        "-c:a", "copy",
+        "-codec:a", "libmp3lame",
+        "-qscale:a", "4",
         "-write_xing", "1",
         tmpOut,
       ]);
@@ -179,7 +181,7 @@ async function addXingHeader(mp3Buffer) {
         if (code !== 0) reject(new Error(`ffmpeg exit ${code}: ${stderr.slice(0, 200)}`));
         else resolve();
       });
-      ff.stdin.end(mp3Buffer);
+      ff.stdin.end(wavBuffer);
     });
     return await readFile(tmpOut);
   } finally {
