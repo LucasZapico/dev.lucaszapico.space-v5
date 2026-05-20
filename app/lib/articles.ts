@@ -20,6 +20,7 @@ export interface Article {
   summary: string;
   readingTime: string;
   sections: ArticleSection[];
+  draft?: boolean;
 }
 
 export const articles: Record<string, Article> = {
@@ -933,6 +934,47 @@ def evaluate_by_regime(
     ],
   },
 
+  "containers-should-just-work": {
+    slug: "containers-should-just-work",
+    title: "Containers Should Just Work",
+    date: "2026-05-20",
+    draft: true,
+    category: "Infrastructure",
+    tags: ["Infrastructure", "DevOps", "Self-Hosting", "Coolify", "Proxmox"],
+    summary:
+      "The friction that pushed me off managed deploy platforms, how I got to running a private cloud on six servers, and what I actually gained from owning the full stack.",
+    readingTime: "7 min",
+    sections: [
+      {
+        body: "For years Vercel and Netlify were the obvious choices. Push to git, get a deploy. That workflow is genuinely good, and I used it without complaint until the builds started failing for reasons I could not easily debug.\n\nThe specific frustration was not one incident, it was a pattern. A build breaks. You dig through documentation, blog posts, GitHub issues, trying to nail down what configuration is wrong. Eventually you find it: a known issue with the specific combination of library, architecture, and functionality you are using. Fix it, ship, repeat. It happened enough times that I had to be honest about what the tool was actually costing me.\n\nThe thing that bothered me most was the principle. An app should run in a container and just work. If I can build a Docker container locally and it runs cleanly, that should be the contract. That promise is what containers exist to make. But Vercel and Netlify have their own opinions about structure layered on top, and if your app does not fit neatly into those expectations, you are fighting the service. Not your code or your dependencies, but the deploy target's assumptions about how things should be built.\n\nNetlify was a different experience but the same story. Seemingly simple apps working fine until they did not. Add one feature too many and suddenly you are fighting the tool instead of shipping.",
+      },
+      {
+        heading: "A framework that kept moving",
+        body: "Next.js compounded this because it was the default, and every major version brought enough structural shifts that I was relearning the same framework on a schedule. The deeper cost was not the relearning. It was the patterns.\n\nOver time I would develop a set of code patterns that were readable, clean, abstracted to the level that let me build quickly and confidently. Then a new version would arrive and a non-trivial number of those abstractions were burned. Not deprecated gradually, just no longer the right way. Instead of building features I was re-architecting to fit the new model. That is not a one-time tax, it compounds across every version.\n\nFor a while the answer was to not upgrade. But that cycle is its own problem. Stay three or four versions behind and the community has moved on. The docs quietly stop covering your version. When something breaks, the answers and blog posts are all written against the newer API, not yours. Finding solutions becomes genuinely harder. It does not feel good to be that far behind, and the longer you wait the worse the eventual upgrade becomes.\n\nWhen something did not work it was also hard to know if it was your code, a framework behavior, or an interaction between the two. That combination of unpredictable debugging surface, version churn that burns your investment, and the upgrade trap is not a foundation for building with confidence.",
+      },
+      {
+        heading: "The math on staging and prototyping",
+        body: "The other pressure was cost. Not production cost, which is defensible, but the cost of running staging environments and prototypes. Twenty to fifty dollars a month per environment adds up if you are building actively. And with fully managed infrastructure there is always the background worry about a misconfigured resource or an unexpected traffic spike generating a bill you did not plan for. I had read enough incident writeups to take that seriously.\n\nHetzner and Linode gave me more control. Predictable prices, no surprise bills. But the cost per server still felt high for throwaway prototyping. I wanted to spin up a staging instance for an experiment, run it for a few days or indefinitely if the idea had legs, and scale it into something real without the economics forcing a decision before the idea was ready.",
+      },
+      {
+        heading: "Starting with an old MacBook Pro",
+        body: "The first step was unglamorous. I flashed Proxmox onto an old MacBook Pro, ran TrueNAS and Ubuntu Server as VMs, and started deploying Docker containers onto it by rsyncing repos and running them manually. Fragile and slow, but it worked, and it taught me more about what is actually happening underneath managed deploys than years of using them had.\n\nOnce I had enough confidence in the approach I invested in a proper rack. Ubuntu Server on Proxmox as the host, Coolify installed on top. Two more MacBook Pros running Ubuntu Server joined as worker nodes. Hetzner stayed as the production server. The architecture settled into local rack for staging and prototyping, Hetzner for anything public-facing.",
+      },
+      {
+        heading: "What Coolify gave back",
+        body: "Coolify was the piece that made it practical. It gives you the git-push-to-deploy workflow without any of the platform dependency. Deployments are defined in the same way, environment variables are managed in one place, and the behavior is predictable. The difference is that when a build fails, you can actually debug it. The logs are complete, the environment is yours, and nothing is hidden behind a managed abstraction.\n\nThe production databases stay on managed services. Mongo Atlas and Supabase for anything that needs uptime guarantees and proper backups. Self-hosting a database that a production app depends on is a different commitment than self-hosting the app layer.",
+      },
+      {
+        heading: "What the stack actually looks like",
+        body: "Six servers total, with Coolify managing deployments across them. Gitea for source control, because GitHub has had enough reliability issues over the past few years that a local mirror is worth having, and because some projects involve large model files that GitHub does not handle well. Plausible for analytics. Uptime Kuma for monitoring with Discord and Slack webhooks. Beszel for hardware metrics. n8n and Windmill for automation. Portainer as a container management layer. Nextcloud for file storage. Pi-hole for DNS, with Ansible playbooks to provision and harden new servers.\n\nI also host CMS and CRM instances for a few small business clients. The right fit is use cases where cost matters more than enterprise uptime guarantees — content sites, internal tools, lightweight apps where an occasional maintenance window is acceptable. Anything that needs redundant infrastructure or formal SLA coverage I route to managed hosting.\n\nI tried Woodpecker CI before settling here. It works and the concept is right: a self-hosted CI pipeline that integrates cleanly with Gitea. But coming from Travis CI and CircleCI it felt rough. The documentation had gaps and the configuration model required more investment than I wanted to make at that point. Coolify's built-in CI covered what I needed without a separate system.",
+      },
+      {
+        heading: "What you actually gain",
+        body: "The direct benefit is cost. Six servers running staging, analytics, automation, monitoring, file storage, and client services costs less than I was paying for two Vercel projects and a handful of managed services.\n\nThe less obvious benefit is context. Running your own infrastructure teaches you things about deployment, networking, and operations that are hard to learn when the complexity is hidden. When a container fails to start, you debug it. When a service is unreachable, you trace the network path. When a deployment breaks, you have full access to the environment. That operational knowledge changes how you write application code and how you make architectural decisions.\n\nThis is not an argument for everyone to self-host everything. Managed platforms solve real problems and the setup cost is not zero. But if you have hit the ceiling of what you can debug on a managed platform, or you are spending more on staging environments than you want to, the investment is worth understanding.",
+      },
+    ],
+  },
+
   "broker-integrations-alpaca-binance": {
     slug: "broker-integrations-alpaca-binance",
     title: "Broker Integrations: Order Execution and Trade Protection in Alpaca and Binance",
@@ -1042,6 +1084,7 @@ def assert_parity(broker_positions, ledger_positions) -> None:
 };
 
 export const articleOrder = [
+  "containers-should-just-work",
   "config-driven-ml-experiments",
   "ml-model-training-setup",
   "trading-platform-architecture",
@@ -1050,3 +1093,20 @@ export const articleOrder = [
   "backtest-variants",
   "broker-integrations-alpaca-binance",
 ];
+
+export const articleSeries: Record<string, string> = {
+  "config-driven-ml-experiments": "trading-platform",
+  "ml-model-training-setup": "trading-platform",
+  "trading-platform-architecture": "trading-platform",
+  "data-normalization-multi-source": "trading-platform",
+  "training-pipeline-fail-fast": "trading-platform",
+  "backtest-variants": "trading-platform",
+  "broker-integrations-alpaca-binance": "trading-platform",
+};
+
+export function getPublishedArticles(includeDrafts = false): Article[] {
+  return articleOrder
+    .map((slug) => articles[slug])
+    .filter((a): a is Article => Boolean(a) && (includeDrafts || !a.draft))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
