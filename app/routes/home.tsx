@@ -97,7 +97,7 @@ const strengths = [
   {
     title: "AI-Augmented Workflow",
     description:
-      "I use AI tools throughout my workflow — research, code generation, testing, documentation. It's not a crutch, it's a multiplier. The architecture and judgment are mine.",
+      "I build with AI tooling and I build the guardrails around it. Specs, SOPs, automated multi-model code review on every push. The speed comes from the AI; the reliability comes from the system around it.",
   },
 ];
 
@@ -251,11 +251,9 @@ export default function Home() {
         {/* Open Source */}
         <FadeIn>
         <Section padding="lg">
-          <SectionLabel>Open Source</SectionLabel>
-          <a
-            href="https://github.com/LucasZapico/mailautumn"
-            target="_blank"
-            rel="noopener noreferrer"
+          <SectionLabel>Other Projects</SectionLabel>
+          <Link
+            to="/lab/mailautumn"
             className="group mt-8 grid grid-cols-12 items-start gap-8 transition-colors hover:text-foreground/80"
           >
             <div className="col-span-12 md:col-span-6 md:order-2">
@@ -299,10 +297,42 @@ export default function Home() {
                 ))}
               </div>
               <span className="mt-4 inline-block text-sm text-muted-foreground underline group-hover:text-foreground">
-                View on GitHub →
+                View project →
               </span>
             </div>
-          </a>
+          </Link>
+
+          <div className="mt-12 border-t pt-12">
+            <Link
+              to="/lab/spotter"
+              className="group block max-w-xl transition-colors hover:text-foreground/80"
+            >
+              <span className="text-sm text-muted-foreground">
+                Node.js + TypeScript + Ollama
+              </span>
+              <H2 className="mt-2">Spotter</H2>
+              <Small className="mt-1 font-medium text-foreground/70">
+                Background code review daemon with multi-model consensus
+              </Small>
+              <Body className="mt-3">
+                Watches file changes and routes diffs to multiple LLMs in
+                parallel — Ollama, Claude Code, or any OpenAI-compatible
+                endpoint. Cross-validates findings before surfacing them.
+                Zero-interruption review that runs while you work, not after
+                you push.
+              </Body>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {["Node.js", "TypeScript", "Chokidar", "Ollama", "Claude Code", "OpenAI API"].map((tag) => (
+                  <span key={tag} className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <span className="mt-4 inline-block text-sm text-muted-foreground underline group-hover:text-foreground">
+                View project →
+              </span>
+            </Link>
+          </div>
         </Section>
         </FadeIn>
 
