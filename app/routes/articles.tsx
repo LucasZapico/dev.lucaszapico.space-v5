@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { generateMeta } from "~/lib/meta";
-import { articles, articleOrder } from "~/lib/articles";
+import { getPublishedArticles } from "~/lib/articles";
 import { H1, H2, Body, Lead, Small } from "~/components/common/typography";
 import { Section } from "~/components/common/section";
 
@@ -13,7 +13,7 @@ export function meta() {
 }
 
 export default function ArticlesPage() {
-  const list = articleOrder.map((slug) => articles[slug]).filter(Boolean);
+  const list = getPublishedArticles(import.meta.env.DEV);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-16">
