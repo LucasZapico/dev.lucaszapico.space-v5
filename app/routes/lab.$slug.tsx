@@ -150,6 +150,18 @@ export default function LabBuildPage({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         </Section>
+
+        {/* Why this matters */}
+        {build.closing && (
+          <FadeIn>
+            <Section padding="md" as="div">
+              <H2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground mb-4">
+                Why this matters
+              </H2>
+              <Body className="text-base leading-relaxed">{build.closing}</Body>
+            </Section>
+          </FadeIn>
+        )}
       </article>
 
       <FloatingNav prev={prev} next={next} basePath="/lab" />

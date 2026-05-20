@@ -33,7 +33,7 @@ const statusColors: Record<BuildStatus, string> = {
 export function meta() {
   return generateMeta({
     title: "Lab — Lucas Zapico",
-    description: "Micro-interactions, experiments, and toy builds.",
+    description: "Projects I build for my own work, practice, and ideas — shipped and in use.",
     path: "/lab",
   });
 }
@@ -257,8 +257,7 @@ export default function LabPage() {
         <section className="mb-16">
           <H1>Lab</H1>
           <Lead className="mt-4 max-w-xl">
-            Personal builds, experiments, and micro-interactions. Some shipped,
-            some still cooking — all built to learn something or scratch an itch.
+            Projects I build for my own work, practice, and ideas. Not client work — but real projects, shipped and in use.
           </Lead>
         </section>
       </FadeIn>

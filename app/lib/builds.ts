@@ -13,6 +13,7 @@ export interface Build {
   tagline: string;
   problem: string;
   overview: string;
+  closing?: string;
   audio?: string;
   stack: string[];
   highlights: BuildHighlight[];
@@ -28,9 +29,11 @@ export const builds: Record<string, Build> = {
     category: "Developer Tool",
     tagline: "Background code review daemon with multi-model consensus",
     audio: "/audio/builds/spotter.mp3",
-    problem: "Different models have different strengths and different blind spots. Claude is strong on architecture and reasoning but would sometimes roll over function-level bugs and missed optimisations, particularly in file-by-file review. We built Spotter to bring open code models into the loop as a dedicated audit layer, reviewing file by file and catching what Claude missed. The goal was to shift the human reviewer to a true final pass. Instead of doing full review from scratch, you're resolving flagged issues that have already been surfaced and cross-validated. The 'you should have caught this' category of bugs mostly disappears before the review even starts.",
+    problem: "Different models have different strengths and different blind spots. Claude is strong on architecture and reasoning but would sometimes roll over function-level bugs and missed optimisations, particularly in file-by-file review. I built Spotter to bring open code models into the loop as a dedicated audit layer, reviewing file by file and catching what Claude missed.",
     overview:
-      "Spotter watches file changes and routes diffs to multiple LLMs in parallel. Ollama, OpenWebUI, Claude Code, or any OpenAI-compatible endpoint. It cross-validates findings before surfacing them. The goal was a zero-interruption review loop that runs while you work, not after you push.",
+      "Spotter watches file changes and routes diffs to multiple LLMs in parallel — Ollama, OpenWebUI, Claude Code, or any OpenAI-compatible endpoint. It cross-validates findings before surfacing them, running as a zero-interruption loop while you work, not after you push. The result is that human review shifts to a true final pass: instead of starting from scratch, you're resolving flagged issues that have already been surfaced and cross-validated. The 'you should have caught this' category of bugs mostly disappears before review even starts.",
+    closing:
+      "AI-assisted development is already standard; the tooling around it isn't. Most teams are still treating LLM code generation as a black box and discovering its failure modes in production. Spotter is one piece of what that answer looks like: layered, multi-model, automated, and tuned to the specific gaps the high-level reasoning passes leave behind.",
     stack: ["Node.js", "TypeScript", "Chokidar", "Ollama", "Claude Code", "OpenAI API"],
     highlights: [
       {
@@ -53,6 +56,40 @@ export const builds: Record<string, Build> = {
     links: [
       { label: "GitHub", href: "https://github.com/LucasZapico/spotter" },
     ],
+  },
+
+  monkeycode: {
+    slug: "monkeycode",
+    title: "MonkeyCode",
+    status: "shipped",
+    category: "Developer Tool",
+    tagline: "Browser-native coding platform with a Socratic AI tutor",
+    audio: "/audio/builds/monkeycode.mp3",
+    problem: "Interview prep platforms have two recurring failures. The first is the feedback loop — you write code in one tab, run it mentally or in a scratchpad, then submit and wait for a test runner. The inner loop between writing code and seeing what it does is slow enough to break flow. The second is the AI integration: most platforms bolt on a 'generate solution' button that hands you the answer, which is exactly the wrong thing for learning. A solution you didn't build doesn't build the pattern recognition you need for an interview.",
+    overview:
+      "A browser-based coding platform where JavaScript executes natively and Python runs client-side via Pyodide — no round-trips, no waiting. The AI tutor is built as a Socratic coach: it asks questions and points toward the right direction without handing over the answer. 56 problems across the patterns that actually show up in technical interviews: arrays, hash maps, two pointers, sliding window, trees, and graphs.",
+    closing:
+      "Building learning tools is harder than building productivity tools. The obvious feature — show me the answer — is usually the wrong feature. Most of the design work was in deciding what not to show, and when.",
+    stack: ["React Router 7", "Monaco Editor", "Pyodide", "Web Workers", "Ollama", "PostgreSQL", "Prisma"],
+    highlights: [
+      {
+        title: "Client-side execution without a server",
+        body: "JavaScript runs natively in the browser. Python runs via Pyodide — a full CPython interpreter compiled to WebAssembly. Both execute inside Web Workers so a runaway loop can't freeze the UI. No backend execution service, no cold starts, no latency between writing and seeing the result.",
+      },
+      {
+        title: "AST instrumentation for complexity analysis",
+        body: "After tests pass, the solution is parsed with acorn and the AST is walked to detect loop nesting depth and recursive call patterns. A passing solution that runs in O(n²) when O(n) is achievable is still a learning moment. The analysis surfaces that before the user moves on.",
+      },
+      {
+        title: "Socratic tutor, not answer machine",
+        body: "The AI tutor runs against a local Ollama instance and is prompted to ask guiding questions rather than produce solutions. If a user is stuck, it asks what they know about the input constraints, or what the brute-force approach would look like. The system prompt is the constraint — it treats giving the answer as a failure mode.",
+      },
+      {
+        title: "Pattern-based problem sets",
+        body: "56 problems organised around the patterns that recur in technical interviews, not a sprawl of 2,000. Each pattern builds on the last. The goal was enough problems to make the pattern feel automatic, not so many that the catalogue becomes the product.",
+      },
+    ],
+    links: [],
   },
 
   "ai-cms": {
@@ -84,6 +121,8 @@ export const builds: Record<string, Build> = {
         body: "Projects define field schemas in .ai-cms/schemas/*.yml. The system prompt injects the full schema so the model knows required fields, types, and constraints and asks specifically for what's missing rather than guessing. Adding a team member becomes a structured conversation, not a free-form edit.",
       },
     ],
+    closing:
+      "The insight that unlocked the design was treating git as the source of truth and letting the database hold only what needs to be fast and queryable. Content managers get a real interface; developers keep their existing guardrails without duplication. That boundary — AI can change content, not shape — is the constraint that makes the whole thing trustworthy enough to actually use.",
     links: [
       { label: "GitHub", href: "https://github.com/LucasZapico/ai-cms" },
     ],
@@ -96,7 +135,7 @@ export const builds: Record<string, Build> = {
     category: "ML Platform",
     tagline: "Infrastructure for running systematic ML trading experiments at scale",
     audio: "/audio/builds/investment-platform.mp3",
-    problem: "This started as an exploratory project with two goals: stress-test AI-assisted development on a genuinely hard problem, and learn the strengths and weaknesses of different ML training approaches across different data spaces. Algorithmic trading is a perfect whetstone. The problem space is well-defined, the feedback loop is honest, and the data challenges are real. Multi-source ingestion from Polygon for equities and CoinGecko, GeckoTerminal, and Binance for crypto, each with different schemas, gaps, and reliability characteristics. Model training across multiple timeframes, model types, feature groups, and position sizing strategies to understand where different approaches break down. Paper and live trading integrations with Alpaca and Binance, with strict validation and local ledger parity to catch any discrepancy between what the system thinks it did and what actually happened. A full frontend dashboard was built alongside the backend but was intentionally deprioritised. Keeping the UI in sync with rapidly changing model configurations added friction without adding signal. The honest result: capital protection models trained extremely well, showing strong resistance in bear and sideways markets. Generating consistent alpha is a harder problem. This is a project worth circling back to.",
+    problem: "Most algorithmic trading projects fail the same way: a hypothesis gets hardcoded into a training script, results look promising, and then changing any variable — the symbol, the timeframe, the feature set — requires editing code and hoping nothing else breaks. The experiment and the infrastructure are tangled. I wanted to build the infrastructure layer first: each hypothesis is a YAML config, the training runner is generic, results are tracked in PostgreSQL. Running a new experiment is a single command. The codebase stays stable while the hypothesis space expands. Algorithmic trading is the right problem to build this on — the feedback loop is honest, the data challenges are real (four sources with different schemas, gaps, and reliability characteristics), and the penalty for getting the infrastructure wrong shows up immediately in unreliable results.",
     overview:
       "A platform built to run trading hypothesis experiments systematically at scale. Each hypothesis lives in a YAML experiment config, not in code — results tracked in PostgreSQL across binary and multi-class architectures, multiple timeframes, and dozens of feature group configurations. A three-tier model gate enforces scientific rigour before any model touches live trading. Data pipelines pull from four sources, normalise across different schemas, and fill gaps continuously. The system runs on dedicated hardware with GPU-accelerated training on an RTX 4090 and paper trading sessions running around the clock.",
     stack: ["Python", "FastAPI", "XGBoost", "SQLAlchemy", "PostgreSQL", "Alembic", "Polygon.io", "Alpaca API", "Binance API", "Docker"],
@@ -118,6 +157,8 @@ export const builds: Record<string, Build> = {
         body: "Market data comes from Polygon (equities live and historical), CoinGecko (crypto 5-minute live), GeckoTerminal (crypto 1-minute live and historical backfill), and Binance (crypto gap fill and execution), each with different schemas, update frequencies, and reliability. A structural volume coverage issue with Binance.US USD pairs (7.6% of expected coverage, because trading is USDT-dominated) led to separate feature sets: 12 features for crypto, 14 for equities. Collectors run continuously and gap fillers backfill missing windows. Data quality checks run before training.",
       },
     ],
+    closing:
+      "Capital protection models trained reliably and the results held across different symbols and timeframes — bear and sideways markets have strong feature signatures that XGBoost identifies well. Generating consistent alpha is a harder problem. A pattern that works attracts capital and the pattern disappears; the right response is a faster iteration loop, not a more sophisticated model. The config system and three-tier gate were built for exactly that. This is a project worth circling back to.",
     links: [],
   },
 
@@ -128,7 +169,7 @@ export const builds: Record<string, Build> = {
     category: "Desktop App",
     tagline: "Complete frontend rewrite of Mailspring — threaded conversations, AI integration, and a built-in CRM",
     audio: "/audio/builds/mailautumn.mp3",
-    problem: "Moving from Mac to Linux meant losing Spark. There wasn't an email client on Linux with the same level of polish or feature set. That was the starting point. But the deeper problem is that a standard email inbox treats every type of email the same way: conversations with colleagues sit next to newsletters, receipts, automated updates, and formal threads where every reply repeats the same signature block. It's a single list for fundamentally different things. The goal was to build the client that fixed both: a solid Linux-native experience and a UI that understands what kind of email it's looking at. Conversations are formatted like Slack messages with signatures stripped. You see the actual new content, not the same block of text repeated six times. Newsletters get their own feed tab, laid out like an editorial feed rather than a list of unread items. Receipts surface the key detail at a glance without opening. Updates the same. Different types of communication, different interfaces.",
+    problem: "A standard email inbox treats every kind of email the same way. Conversations with colleagues sit next to newsletters, receipts, automated updates, and formal threads where every reply repeats the same signature block. It's a single list for fundamentally different things. Moving from Mac to Linux — and losing Spark in the process — was the moment I decided to build the client that fixed both: a solid Linux-native experience and a UI that understands what kind of email it's looking at. Conversations are formatted like Slack messages with signatures stripped. You see the actual new content, not the same block of text repeated six times. Newsletters get their own feed tab, laid out like an editorial feed rather than a list of unread items. Receipts surface the key detail at a glance without opening. Different types of communication, different interfaces.",
     overview:
       "A full rewrite of the Mailspring email client UI while keeping its battle-tested C++ sync engine. The goal was a modern, keyboard-first email experience with Slack-style threading, multi-provider AI assistance, and a lightweight CRM. Built as a daily driver, not a demo. 15,000+ lines of TypeScript across Electron main and React renderer.",
     stack: ["Electron", "React 18", "TypeScript", "Tailwind v4", "Jotai", "Vite", "better-sqlite3"],
@@ -150,6 +191,8 @@ export const builds: Record<string, Build> = {
         body: "After archive or trash, the UI marks threads as removed and suppresses delta-triggered reloads for 5 seconds, then clears after 30. Without this, the mailsync delta arrives before the database is consistent and the archived thread reappears momentarily. The guard is simple but the absence of it is the kind of thing that makes a daily driver feel broken.",
       },
     ],
+    closing:
+      "Building a daily driver is a different constraint than building a demo. Every decision gets load-tested at real email volume, and the things that matter most are invisible — the message that doesn't reappear after archiving, the conversation that correctly strips the quoted block you'd already read six times. The right abstraction boundary was the key call: building on Mailspring's sync engine meant months of reliable email instead of reimplementing IMAP edge cases. That tradeoff shaped everything else.",
     links: [
       { label: "GitHub", href: "https://github.com/LucasZapico/mailautumn" },
     ],
@@ -218,13 +261,15 @@ export const builds: Record<string, Build> = {
         body: "idle → listening → processing → speaking, with Escape to interrupt at any phase. Silence detection auto-stops the STT after a configurable quiet period. Mic permission errors surface a retry prompt. The state machine means the avatar always reflects what's actually happening, not just what was last said.",
       },
     ],
+    closing:
+      "The multi-modal pipeline works — voice in, avatar out, model-swappable at every stage. The 3D avatar work exposed how much craft goes into character animation that feels present rather than mechanical; that part is parked until it can be done properly. The personality modes are the part worth returning to: a single conversational interface that shifts between interviewer, coach, mentor, and colleague depending on what you need is a genuinely useful tool.",
     links: [
       { label: "GitHub", href: "https://github.com/LucasZapico/cortana" },
     ],
   },
 };
 
-export const buildOrder = ["spotter", "mailautumn", "monkeycode", "ai-cms", "investment-platform", "cortana"];
+export const buildOrder = ["spotter", "monkeycode", "mailautumn", "ai-cms", "investment-platform", "cortana"];
 
 export const statusLabel: Record<BuildStatus, string> = {
   shipped: "Shipped",
