@@ -5,10 +5,19 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { usePlausible } from "~/lib/plausible";
+
+export async function loader() {
+  return {
+    plausibleDomain: process.env.PLAUSIBLE_DOMAIN || "",
+    plausibleApiHost: process.env.PLAUSIBLE_API_HOST || "",
+  };
+}
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/webp", href: "/favicon.webp" },
@@ -48,6 +57,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const { plausibleDomain, plausibleApiHost } = useLoaderData<typeof loader>();
+  usePlausible(plausibleDomain, plausibleApiHost);
   return <Outlet />;
 }
 

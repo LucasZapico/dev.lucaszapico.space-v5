@@ -18,7 +18,8 @@ Create from client work — gut client data, keep architecture. Pin once ready.
 - [ ] Articles content (phase 2)
 - [ ] Remove or hide /docs route before production
 - [x] OG image — static `/og-image.png` (1200×630), wired into `generateMeta()` with width/height/alt + twitter:image
-- [ ] Analytics (consider Plausible)
+- [x] Analytics — Plausible wired via `@plausible-analytics/tracker` + loader env vars
+- [ ] Coolify: add `PLAUSIBLE_DOMAIN=dev.lucaszapico.space` and `PLAUSIBLE_API_HOST=https://plausible.io`
 - [ ] Article summary audio snippets — title + summary only (~15s each), skip full narration since code blocks are the substance; new generate-articles-audio.mjs following work audio pattern
 
 ## Responsive + Accessibility Pass
