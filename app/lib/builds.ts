@@ -267,9 +267,46 @@ export const builds: Record<string, Build> = {
       { label: "GitHub", href: "https://github.com/LucasZapico/cortana" },
     ],
   },
+
+  "gradient-galore": {
+    slug: "gradient-galore",
+    title: "Gradient Galore",
+    status: "shipped",
+    category: "Design Tool",
+    tagline: "Visual gradient maker with six rendering modes and a community gallery",
+    problem:
+      "CSS gradients are more capable than most designers use them. Linear and radial are obvious. Conic, mesh, aura, and SVG-based marble gradients are less explored, and the browser tooling for building them is sparse. Most gradient tools stop at color pickers and a single gradient type. I wanted a tool that let you actually explore the full range of what the browser can render.",
+    overview:
+      "A browser-based gradient builder covering six gradient types: linear, radial, conic, aura, mesh, and marble. Each type has controls tuned to its rendering model. Marble generates blurred organic shapes using inline SVG with feGaussianBlur and blend modes. Aura and mesh layer radial blobs with per-point position, spread, opacity, and rotation controls. All gradient state persists to localStorage so sessions survive a refresh. A palette system lets you import color palettes and apply swatches directly to gradient stops. Finished gradients can be published to a community gallery filtered by type.",
+    closing:
+      "CSS gradient generation is a narrow problem but a good testbed for state management at the control level. Each gradient type has a distinct state shape and different controls that need to stay in sync with a live preview. Jotai's atom model worked well here: fine-grained subscriptions meant only the controls relevant to the active gradient type re-rendered on change, which kept the preview smooth.",
+    stack: ["React Router 7", "Tailwind CSS v4", "shadcn/ui", "Jotai", "Drizzle ORM", "SQLite", "Vite"],
+    highlights: [
+      {
+        title: "Six gradient types, six rendering models",
+        body: "Linear, radial, and conic map directly to CSS gradient functions with controls for angle, position, shape, and repeating mode. Aura and mesh layer radial blobs rendered as CSS gradients with per-point position, size, opacity, rotation, and z-index controls. Marble uses inline SVG with feGaussianBlur filters and configurable blend modes to produce organic marble-like patterns from color layers.",
+      },
+      {
+        title: "Palette import and quick-apply",
+        body: "Palettes are imported by pasting text in a structured format and parsed into named color sets. Palette swatches appear inline in the gradient controls so you can select a color stop and apply a swatch without opening a color picker. Palettes persist in localStorage across sessions.",
+      },
+      {
+        title: "Community gallery with live CSS thumbnails",
+        body: "Published gradients are stored in SQLite via Drizzle ORM with the full gradient state as JSON and a pre-rendered CSS string for thumbnail display. Gallery cards render live CSS gradients from the stored CSS rather than serving images, so thumbnails are always accurate and zero-storage.",
+      },
+      {
+        title: "Portable schema designed for production",
+        body: "Local development uses SQLite via better-sqlite3. The Drizzle schema is written to be dialect-portable so switching to Postgres for production is a driver swap, not a rewrite. The Docker setup mounts a persistent volume for the database file.",
+      },
+    ],
+    links: [
+      { label: "GitHub", href: "https://github.com/bluemonkeymakes/gradient-galore" },
+      { label: "Live", href: "https://gradientsgalore.bluemonkeymakes.app/" },
+    ],
+  },
 };
 
-export const buildOrder = ["spotter", "monkeycode", "mailautumn", "ai-cms", "investment-platform", "cortana"];
+export const buildOrder = ["spotter", "monkeycode", "mailautumn", "ai-cms", "investment-platform", "cortana", "gradient-galore"];
 
 export const statusLabel: Record<BuildStatus, string> = {
   shipped: "Shipped",
