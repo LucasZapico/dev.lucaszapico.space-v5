@@ -58,40 +58,6 @@ export const builds: Record<string, Build> = {
     ],
   },
 
-  monkeycode: {
-    slug: "monkeycode",
-    title: "MonkeyCode",
-    status: "shipped",
-    category: "Developer Tool",
-    tagline: "Browser-native coding platform with a Socratic AI tutor",
-    audio: "/audio/builds/monkeycode.mp3",
-    problem: "Interview prep platforms have two recurring failures. The first is the feedback loop — you write code in one tab, run it mentally or in a scratchpad, then submit and wait for a test runner. The inner loop between writing code and seeing what it does is slow enough to break flow. The second is the AI integration: most platforms bolt on a 'generate solution' button that hands you the answer, which is exactly the wrong thing for learning. A solution you didn't build doesn't build the pattern recognition you need for an interview.",
-    overview:
-      "A browser-based coding platform where JavaScript executes natively and Python runs client-side via Pyodide — no round-trips, no waiting. The AI tutor is built as a Socratic coach: it asks questions and points toward the right direction without handing over the answer. 56 problems across the patterns that actually show up in technical interviews: arrays, hash maps, two pointers, sliding window, trees, and graphs.",
-    closing:
-      "Building learning tools is harder than building productivity tools. The obvious feature — show me the answer — is usually the wrong feature. Most of the design work was in deciding what not to show, and when.",
-    stack: ["React Router 7", "Monaco Editor", "Pyodide", "Web Workers", "Ollama", "PostgreSQL", "Prisma"],
-    highlights: [
-      {
-        title: "Client-side execution without a server",
-        body: "JavaScript runs natively in the browser. Python runs via Pyodide — a full CPython interpreter compiled to WebAssembly. Both execute inside Web Workers so a runaway loop can't freeze the UI. No backend execution service, no cold starts, no latency between writing and seeing the result.",
-      },
-      {
-        title: "AST instrumentation for complexity analysis",
-        body: "After tests pass, the solution is parsed with acorn and the AST is walked to detect loop nesting depth and recursive call patterns. A passing solution that runs in O(n²) when O(n) is achievable is still a learning moment. The analysis surfaces that before the user moves on.",
-      },
-      {
-        title: "Socratic tutor, not answer machine",
-        body: "The AI tutor runs against a local Ollama instance and is prompted to ask guiding questions rather than produce solutions. If a user is stuck, it asks what they know about the input constraints, or what the brute-force approach would look like. The system prompt is the constraint — it treats giving the answer as a failure mode.",
-      },
-      {
-        title: "Pattern-based problem sets",
-        body: "56 problems organised around the patterns that recur in technical interviews, not a sprawl of 2,000. Each pattern builds on the last. The goal was enough problems to make the pattern feel automatic, not so many that the catalogue becomes the product.",
-      },
-    ],
-    links: [],
-  },
-
   "ai-cms": {
     slug: "ai-cms",
     title: "AI CMS",
@@ -268,6 +234,43 @@ export const builds: Record<string, Build> = {
     ],
   },
 
+  pomogee: {
+    slug: "pomogee",
+    title: "Pomogee",
+    status: "shipped",
+    category: "Productivity Tool",
+    tagline: "Pomodoro timer that turns your work sessions into generative geometry",
+    problem:
+      "Pomodoro timers are all functionally identical. Start, wait, stop, repeat. The rhythm of your day — whether you took real breaks, whether you had gaps, whether you worked in long continuous runs — disappears as soon as the session ends. I wanted a timer that made the shape of the day visible, and one I could actually run as a native desktop app without Electron's overhead.",
+    overview:
+      "A Pomodoro timer built with Tauri v2 and React. Each completed work session is rendered as a geometric shape layer in an SVG canvas that builds across the day. Shape family encodes how the session connected to the one before it: polygons for continuous work, circles for sessions that followed a timed break, stars for sessions that started after an untimed gap. Time of day scales each shape's size, and day-of-week drives shape complexity. The result is a visual record of your work rhythm that accumulates in real time.",
+    closing:
+      "The generative geometry is the part that made this worth building. A timer that just counts down is a utility. A timer that shows you whether you actually rested between sessions, or just kept starting new ones without breaks, is a feedback tool. The shape canvas is that feedback made visible.",
+    stack: ["Tauri v2", "React 19", "TypeScript", "Zustand", "Tailwind CSS", "shadcn/ui", "Vite"],
+    highlights: [
+      {
+        title: "Session mode classification",
+        body: "Each completed work session is classified as continuous, break, or gap based on what came before it. A session that follows a timed short or long break is break mode. A session that starts more than ten minutes after the last activity is gap mode. Everything else is continuous. The ten-minute threshold is tuned so a quick pause stays continuous but a meeting interruption registers as a gap.",
+      },
+      {
+        title: "Generative geometry encoding session data",
+        body: "Shape family maps to session mode: polygon for continuous, circle for break, star for gap. Shape complexity (number of polygon sides) increases with the day-of-week variant. Time of day drives the radial scale, so morning sessions render smaller and midday sessions larger. Stars are exclusive per time-scale bucket — a second gap in the same bucket renders as a polygon to avoid visual dominance.",
+      },
+      {
+        title: "Timer state machine with session history",
+        body: "Phases (idle, work, shortBreak, longBreak) and run states (idle, running, paused) are managed in Zustand with persist middleware. Interrupted sessions are recorded if more than five seconds elapsed. Session history survives refresh and accumulates across the calendar day. A calendar view shows completed sessions per day.",
+      },
+      {
+        title: "Tauri v2 for native desktop",
+        body: "The web layer is a standard React/Vite app that runs in the browser for development. Tauri wraps it in a native Rust shell for desktop distribution. No Electron runtime, no Chromium bundle — the final binary is a fraction of the size and starts significantly faster.",
+      },
+    ],
+    links: [
+      { label: "GitHub", href: "https://github.com/bluemonkeymakes/pomogee" },
+      { label: "Live", href: "https://pomogee.bluemonkeymakes.app/" },
+    ],
+  },
+
   "gradient-galore": {
     slug: "gradient-galore",
     title: "Gradient Galore",
@@ -306,7 +309,7 @@ export const builds: Record<string, Build> = {
   },
 };
 
-export const buildOrder = ["spotter", "monkeycode", "mailautumn", "ai-cms", "investment-platform", "cortana", "gradient-galore"];
+export const buildOrder = ["spotter", "monkeycode", "mailautumn", "ai-cms", "investment-platform", "cortana", "gradient-galore", "pomogee"];
 
 export const statusLabel: Record<BuildStatus, string> = {
   shipped: "Shipped",
