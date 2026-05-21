@@ -23,6 +23,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
+
+try { process.loadEnvFile(join(ROOT, ".env")); } catch {}
+
 const KOKORO = process.env.KOKORO_URL ?? "http://localhost:8880";
 const VOICE = process.env.KOKORO_VOICE ?? "af_sky";
 const MANIFEST_PATH = join(ROOT, "public/audio/manifest.json");
@@ -149,7 +152,7 @@ async function fetchTTS(text) {
   const res = await fetch(`${KOKORO}/tts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, voice: VOICE }),
+    body: JSON.stringify({ text, en_voice: VOICE }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
